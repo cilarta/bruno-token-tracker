@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Token Economy Tracker v123</title>
+    <style>
+        :root {
+            --primary: #3182f6;
+            --primary-dark: #2563eb;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-700: #374151;
+            --gray-900: #111827;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--gray-100); color: var(--gray-900); padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        header { background: white; padding: 20px; border-radius: 10px; margin-bottom: 30px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        h1 { font-size: 28px; margin-bottom: 10px; }
+        .token-display { font-size: 24px; color: var(--primary); font-weight: bold; margin: 15px 0; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .card h2 { font-size: 18px; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid var(--gray-200); }
+        .base-color { border-left: 4px solid var(--success); }
+        .pro-color { border-left: 4px solid var(--warning); }
+        .vip-color { border-left: 4px solid var(--danger); }
+        .item-list { display: flex; flex-direction: column; gap: 10px; }
+        .item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--gray-100); border-radius: 8px; font-size: 14px; }
+        .item-name { flex: 1; }
+        .token-badge { background: var(--primary); color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 12px; }
+        .penalties { background: var(--gray-100); padding: 15px; border-radius: 8px; margin-top: 15px; }
+        .penalty-item { font-size: 13px; margin: 8px 0; display: flex; justify-content: space-between; }
+        .penalty-name { flex: 1; }
+        .penalty-value { color: var(--danger); font-weight: bold; }
+        .section-title { background: var(--primary); color: white; padding: 15px; border-radius: 8px; margin: 20px 0 15px; font-size: 16px; font-weight: bold; }
+        .premi-item { background: var(--gray-100); padding: 15px; border-radius: 8px; margin-bottom: 12px; }
+        .premi-header { font-weight: bold; color: var(--primary); margin-bottom: 8px; }
+        .premi-option { font-size: 13px; margin: 5px 0 5px 20px; }
+        .footer { background: white; padding: 20px; border-radius: 10px; text-align: center; font-size: 13px; color: var(--gray-700); margin-top: 30px; }
+        .edit-section { background: var(--gray-100); padding: 20px; border-radius: 10px; margin: 30px 0; }
+        .edit-controls { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
+        input[type="password"], input[type="number"], input[type="text"] { padding: 8px 12px; border: 1px solid var(--gray-200); border-radius: 6px; font-size: 14px; }
+        button { padding: 10px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-success { background: var(--success); color: white; }
+        .btn-success:hover { background: #059669; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-danger:hover { background: #dc2626; }
+        .status { background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+        .status-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--gray-200); }
+        .status-item:last-child { border-bottom: none; }
+        @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } h1 { font-size: 22px; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎮 Bruno Mars e i suoi guadagni</h1>
+            <p>Tu volere KEBAP? Tu volele sushi? Tu volere soldini? Tu bravo, tu ottiene!</p>
+            <div class="token-display">Token Totali: <span id="totalTokens">0</span></div>
+        </header>
+
+        <div class="status">
+            <div class="status-item"><span>Giorni senza penalità:</span><span id="streakDays">0</span></div>
+            <div class="status-item"><span>Token da azioni base:</span><span id="baseTokens">0</span></div>
+            <div class="status-item"><span>Token da azioni pro:</span><span id="proTokens">0</span></div>
+            <div class="status-item"><span>Token da azioni VIP:</span><span id="vipTokens">0</span></div>
+            <div class="status-item"><span>Token persi da penalità:</span><span id="penaltyTokens">0</span></div>
+        </div>
+
+        <div class="edit-section">
+            <h3 style="margin-bottom: 15px;">⚙️ Gestione Token</h3>
+            <div class="edit-controls">
+                <input type="password" id="adminPassword" placeholder="Password admin" value="">
+                <button class="btn-primary" onclick="checkPassword()">🔓 Sblocca Modifiche</button>
+            </div>
+            <div id="editContent" style="display: none;">
+                <div class="edit-controls">
+                    <input type="number" id="tokenAmount" placeholder="Numero token" value="1" min="1">
+                    <button class="btn-success" onclick="addToken()">+ Aggiungi Token</button>
+                    <button class="btn-danger" onclick="removeToken()">- Rimuovi Token</button>
+                </div>
+                <div class="edit-controls">
+                    <input type="number" id="penaltyAmount" placeholder="Penalità" value="1" min="1" max="2">
+                    <button class="btn-danger" onclick="addPenalty()">Applica Penalità</button>
+                </div>
+                <div class="edit-controls">
+                    <input type="number" id="streakInput" placeholder="Giorni senza penalità" value="1" min="1">
+                    <button class="btn-primary" onclick="setStreakDays()">Imposta Giorni Senza Penalità</button>
+                    <button class="btn-primary" onclick="addStreakDay()">+ 1 Giorno Senza Penalità</button>
+                </div>
+                <div class="edit-controls">
+                    <button class="btn-danger" onclick="resetData()">🔄 Ripristina Tutto</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="card base-color">
+                <h2>✅ Livello Base (1 token)</h2>
+                <div class="item-list">
+                    <div class="item"><span class="item-name">Completare compiti scolastici entro l'orario</span><span class="token-badge">1</span></div>
+                    <div class="item"><span class="item-name">Riordinare e tenere in ordine la stanza</span><span class="token-badge">1</span></div>
+                    <div class="item"><span class="item-name">Rispettare il limite di tempo telefono</span><span class="token-badge">1</span></div>
+                    <div class="item"><span class="item-name">Mangiare tutto senza lamentarsi</span><span class="token-badge">1</span></div>
+                    <div class="item"><span class="item-name">Giocare con il cane per 20 minuti senza distrazioni</span><span class="token-badge">1</span></div>
+                    <div class="item"><span class="item-name">Bere un bicchiere d'acqua (max 5 al giorno)</span><span class="token-badge">1</span></div>
+                    <div class="item"><span class="item-name">Suonare la batteria elettrica per 15 minuti</span><span class="token-badge">1</span></div>
+                </div>
+            </div>
+
+            <div class="card pro-color">
+                <h2>🌟 Livello Pro (3 token)</h2>
+                <div class="item-list">
+                    <div class="item"><span class="item-name">Partecipare a visite mediche con coraggio</span><span class="token-badge">3</span></div>
+                    <div class="item"><span class="item-name">Leggere un libro di almeno 80 pagine (No fumetti)</span><span class="token-badge">3</span></div>
+                    <div class="item"><span class="item-name">Partecipare a un gioco di società completo (no smartphone)</span><span class="token-badge">3</span></div>
+                    <div class="item"><span class="item-name">Imparare una ricetta da chi sta cucinando</span><span class="token-badge">3</span></div>
+                </div>
+            </div>
+
+            <div class="card vip-color">
+                <h2>🏆 Livello VIP (8 token)</h2>
+                <div class="item-list">
+                    <div class="item"><span class="item-name">Imparare a suonare un brano completo con la batteria</span><span class="token-badge">8</span></div>
+                    <div class="item"><span class="item-name">Creare un fumetto originale di almeno 4 tavole</span><span class="token-badge">8</span></div>
+                    <div class="item"><span class="item-name">Passare un giorno intero senza schermi (tv, smartphone, tablet)</span><span class="token-badge">8</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>⚠️ Penalità</h2>
+            <div class="penalties">
+                <div class="penalty-item"><span class="penalty-name">Telefono oltre limite</span><span class="penalty-value">-2</span></div>
+                <div class="penalty-item"><span class="penalty-name">Lamentarsi durante i pasti</span><span class="penalty-value">-1</span></div>
+                <div class="penalty-item"><span class="penalty-name">Non completare compiti</span><span class="penalty-value">-2</span></div>
+                <div class="penalty-item"><span class="penalty-name">Non mantenere promesse</span><span class="penalty-value">-2</span></div>
+                <div class="penalty-item"><span class="penalty-name">Fare i capricci</span><span class="penalty-value">-1</span></div>
+                <div class="penalty-item"><span class="penalty-name">Voto negativo a scuola</span><span class="penalty-value">-50</span></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🎁 Bonus Streak (Giorni senza penalità)</h2>
+            <div class="item-list">
+                <div class="item"><span class="item-name">7 giorni senza penalità</span><span class="token-badge">1</span></div>
+                <div class="item"><span class="item-name">14 giorni senza penalità</span><span class="token-badge">3</span></div>
+                <div class="item"><span class="item-name">21 giorni senza penalità</span><span class="token-badge">6</span></div>
+                <div class="item"><span class="item-name">28 giorni senza penalità</span><span class="token-badge">10</span></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🎮 Premi (Scambio Token)</h2>
+            <div class="section-title">30 Token</div>
+            <div class="premi-item"><div class="premi-header">Opzione A: Ricarica Play Store</div><div class="premi-option">Ricarica da 5 euro</div></div>
+            <div class="premi-item"><div class="premi-header">Opzione B: Cibo</div><div class="premi-option">Kebab</div></div>
+            <div class="section-title">60 Token</div>
+            <div class="premi-item"><div class="premi-header">Opzione A: Ricarica Play Store</div><div class="premi-option">Ricarica da 10 euro</div></div>
+            <div class="premi-item"><div class="premi-header">Opzione B: Cibo</div><div class="premi-option">McDonald's</div></div>
+            <div class="section-title">100 Token</div>
+            <div class="premi-item"><div class="premi-header">Opzione A: Ricarica Play Store</div><div class="premi-option">Ricarica da 20 euro</div></div>
+            <div class="premi-item"><div class="premi-header">Opzione B: Cibo</div><div class="premi-option">Mangiare sushi</div></div>
+            <div style="background: var(--warning); color: white; padding: 15px; border-radius: 8px; margin-top: 20px; font-size: 13px;">ℹ️ È possibile barattare token per quello che vuole, purché sia d'accordo la mamma. Se non è d'accordo, non insistere. Insistere comporta penalità di 3 token.</div>
+        </div>
+
+        <div class="footer">
+            <p>Token Economy Tracker | Sistema di gestione comportamenti positivi</p>
+        </div>
+    </div>
+
+    <script>
+        const ADMIN_PASSWORD = "FalkorMiuraFrechete";
+
+        function loadData() {
+            const saved = localStorage.getItem('tokenEconomy');
+            if (saved) {
+                return JSON.parse(saved);
+            }
+            return {
+                totalTokens: 0,
+                streakDays: 0,
+                baseTokens: 0,
+                proTokens: 0,
+                vipTokens: 0,
+                penaltyTokens: 0
+            };
+        }
+
+        function saveData(data) {
+            localStorage.setItem('tokenEconomy', JSON.stringify(data));
+        }
+
+        function updateDisplay() {
+            const data = loadData();
+            document.getElementById('totalTokens').textContent = data.totalTokens;
+            document.getElementById('streakDays').textContent = data.streakDays;
+            document.getElementById('baseTokens').textContent = data.baseTokens;
+            document.getElementById('proTokens').textContent = data.proTokens;
+            document.getElementById('vipTokens').textContent = data.vipTokens;
+            document.getElementById('penaltyTokens').textContent = data.penaltyTokens;
+        }
+
+        function checkPassword() {
+            const password = document.getElementById('adminPassword').value;
+            if (password === ADMIN_PASSWORD) {
+                document.getElementById('editContent').style.display = 'block';
+                document.getElementById('adminPassword').style.display = 'none';
+                document.querySelector('button[onclick="checkPassword()"]').style.display = 'none';
+                alert('🔓 Accesso sbloccato! Puoi ora modificare i token.');
+            } else if (password === '') {
+                alert('⚠️ Inserisci la password');
+            } else {
+                alert('❌ Password sbagliata!');
+                document.getElementById('adminPassword').value = '';
+            }
+        }
+
+        function addToken() {
+            const amount = parseInt(document.getElementById('tokenAmount').value) || 1;
+            const data = loadData();
+            data.totalTokens += amount;
+            data.baseTokens += amount;
+            saveData(data);
+            updateDisplay();
+            alert(`✅ Aggiunti ${amount} token!`);
+        }
+
+        function removeToken() {
+            const amount = parseInt(document.getElementById('tokenAmount').value) || 1;
+            const data = loadData();
+            data.totalTokens = Math.max(0, data.totalTokens - amount);
+            data.baseTokens = Math.max(0, data.baseTokens - amount);
+            saveData(data);
+            updateDisplay();
+            alert(`❌ Rimossi ${amount} token!`);
+        }
+
+        function addPenalty() {
+            const amount = parseInt(document.getElementById('penaltyAmount').value) || 1;
+            const data = loadData();
+            data.totalTokens = Math.max(0, data.totalTokens - amount);
+            data.penaltyTokens += amount;
+            data.streakDays = 0;
+            saveData(data);
+            updateDisplay();
+            alert(`⚠️ Applicata penalità di ${amount} token! Streak resettato.`);
+        }
+
+        function addStreakDay() {
+            const data = loadData();
+            data.streakDays += 1;
+
+            if (data.streakDays === 7 || data.streakDays === 14 || data.streakDays === 21 || data.streakDays === 28) {
+                const rewards = { 7: 1, 14: 3, 21: 6, 28: 10 };
+                const bonus = rewards[data.streakDays];
+                data.totalTokens += bonus;
+                alert(`🎉 Complimenti! Hai raggiunto ${data.streakDays} giorni senza penalità! Bonus: +${bonus} token!`);
+            }
+
+            saveData(data);
+            updateDisplay();
+        }
+
+        function setStreakDays() {
+            const days = parseInt(document.getElementById('streakInput').value) || 1;
+            const data = loadData();
+            data.streakDays = days;
+
+            if (days === 7 || days === 14 || days === 21 || days === 28) {
+                const rewards = { 7: 1, 14: 3, 21: 6, 28: 10 };
+                const bonus = rewards[days];
+                data.totalTokens += bonus;
+                alert(`🎉 Hai raggiunto ${days} giorni senza penalità! Bonus: +${bonus} token!`);
+            } else {
+                alert(`✅ Impostati ${days} giorni senza penalità!`);
+            }
+
+            saveData(data);
+            updateDisplay();
+        }
+
+        function resetData() {
+            if (confirm('Sei sicuro di voler resettare tutti i dati? Questa azione non può essere annullata.')) {
+                localStorage.removeItem('tokenEconomy');
+                updateDisplay();
+                alert('🔄 Dati resettati!');
+            }
+        }
+
+        updateDisplay();
+    </script>
+</body>
+</html>
