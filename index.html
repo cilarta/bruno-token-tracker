@@ -3,21 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    <title>Token Economy Tracker v124</title>
+    <title>Token Economy Tracker - Cloud</title>
     <style>
         :root {
-            --primary: #3182f6;
-            --primary-dark: #2563eb;
-            --success: #10b981;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --gray-100: #f3f4f6;
-            --gray-200: #e5e7eb;
-            --gray-700: #374151;
-            --gray-900: #111827;
+            --primary: #3182f6; --primary-dark: #2563eb; --success: #10b981;
+            --danger: #ef4444; --warning: #f59e0b; --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb; --gray-700: #374151; --gray-900: #111827;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--gray-100); color: var(--gray-900); padding: 20px; }
@@ -35,13 +26,10 @@
         .item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--gray-100); border-radius: 8px; font-size: 14px; }
         .item-name { flex: 1; }
         .token-badge { background: var(--primary); color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 12px; }
-        
-        .penalties-grid { display: grid; grid-template-columns: 1fr; gap: 1px; background: var(--gray-200); border-radius: 8px; overflow: hidden; margin-top: 15px; border: 1px solid var(--gray-200); }
-        .penalty-header { display: flex; justify-content: space-between; background: var(--gray-100); padding: 12px 15px; font-weight: bold; color: var(--gray-700); font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
-        .penalty-row { display: flex; justify-content: space-between; align-items: center; background: white; padding: 12px 15px; font-size: 14px; }
-        .penalty-row:hover { background: #fef2f2; }
-        .penalty-badge { background: #fee2e2; color: var(--danger); font-weight: bold; padding: 4px 10px; border-radius: 20px; font-size: 13px; min-width: 40px; text-align: center; }
-
+        .penalties { background: var(--gray-100); padding: 15px; border-radius: 8px; margin-top: 15px; }
+        .penalty-item { font-size: 13px; margin: 8px 0; display: flex; justify-content: space-between; }
+        .penalty-name { flex: 1; }
+        .penalty-value { color: var(--danger); font-weight: bold; }
         .section-title { background: var(--primary); color: white; padding: 15px; border-radius: 8px; margin: 20px 0 15px; font-size: 16px; font-weight: bold; }
         .premi-item { background: var(--gray-100); padding: 15px; border-radius: 8px; margin-bottom: 12px; }
         .premi-header { font-weight: bold; color: var(--primary); margin-bottom: 8px; }
@@ -69,6 +57,7 @@
         .type-penalty { background: #6b7280; color: white; }
         .type-streak { background: #8b5cf6; color: white; }
         .history-value { font-weight: bold; color: var(--primary); }
+        #loading { text-align: center; padding: 20px; font-weight: bold; color: var(--primary); display: none; }
         @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } h1 { font-size: 22px; } }
     </style>
 </head>
@@ -77,21 +66,22 @@
         <header>
             <h1>🎮 Bruno Mars e i suoi guadagni</h1>
             <p>Tu volere KEBAP? Tu volele sushi? Tu volere soldini? Tu bravo, tu ottiene!</p>
-            <div class="token-display">Token Totali: <span id="totalTokens">0</span></div>
+            <div id="loading">📡 Sincronizzazione con il cloud...</div>
+            <div class="token-display">Token Totali: <span id="totalTokens">...</span></div>
         </header>
 
         <div class="status">
-            <div class="status-item"><span>Giorni senza penalità:</span><span id="streakDays">0</span></div>
-            <div class="status-item"><span>Token da azioni base:</span><span id="baseTokens">0</span></div>
-            <div class="status-item"><span>Token da azioni pro:</span><span id="proTokens">0</span></div>
-            <div class="status-item"><span>Token da azioni VIP:</span><span id="vipTokens">0</span></div>
-            <div class="status-item"><span>Token persi da penalità:</span><span id="penaltyTokens">0</span></div>
+            <div class="status-item"><span>Giorni senza penalità:</span><span id="streakDays">...</span></div>
+            <div class="status-item"><span>Token da azioni base:</span><span id="baseTokens">...</span></div>
+            <div class="status-item"><span>Token da azioni pro:</span><span id="proTokens">...</span></div>
+            <div class="status-item"><span>Token da azioni VIP:</span><span id="vipTokens">...</span></div>
+            <div class="status-item"><span>Token persi da penalità:</span><span id="penaltyTokens">...</span></div>
         </div>
 
         <div class="card">
             <h2>📊 Storico Token Ultimi</h2>
             <div class="history-list" id="historyList">
-                <p style="color: var(--gray-700); font-size: 13px;">Nessun movimento ancora...</p>
+                <p style="color: var(--gray-700); font-size: 13px;">Caricamento storico...</p>
             </div>
         </div>
 
@@ -99,7 +89,7 @@
             <h3 style="margin-bottom: 15px;">⚙️ Gestione Token</h3>
             <div class="edit-controls">
                 <input type="password" id="adminPassword" placeholder="Password admin" value="">
-                <button class="btn-primary" onclick="checkPassword()">🔓 Sblocca Modifiche</button>
+                <button class="btn-primary" onclick="window.checkPassword()">🔓 Sblocca Modifiche</button>
             </div>
             <div id="editContent" style="display: none;">
                 <div class="edit-controls">
@@ -109,25 +99,20 @@
                         <option value="vip">🏆 Token VIP</option>
                     </select>
                     <input type="number" id="tokenAmount" placeholder="Numero token" value="1" min="1">
-                    <button class="btn-success" onclick="addTokenTyped()">+ Aggiungi Token</button>
-                    <button class="btn-danger" onclick="removeTokenTyped()">- Rimuovi Token</button>
+                    <button class="btn-success" onclick="window.addTokenTyped()">+ Aggiungi Token</button>
+                    <button class="btn-danger" onclick="window.removeTokenTyped()">- Rimuovi Token</button>
                 </div>
                 <div class="edit-controls">
                     <input type="number" id="penaltyAmount" placeholder="Penalità" value="1" min="1" max="2">
-                    <button class="btn-danger" onclick="addPenalty()">Applica Penalità</button>
+                    <button class="btn-danger" onclick="window.addPenalty()">Applica Penalità</button>
                 </div>
                 <div class="edit-controls">
                     <input type="number" id="streakInput" placeholder="Giorni senza penalità" value="1" min="1">
-                    <button class="btn-primary" onclick="setStreakDays()">Imposta Giorni Senza Penalità</button>
-                    <button class="btn-primary" onclick="addStreakDay()">+ 1 Giorno Senza Penalità</button>
+                    <button class="btn-primary" onclick="window.setStreakDays()">Imposta Giorni Senza Penalità</button>
+                    <button class="btn-primary" onclick="window.addStreakDay()">+ 1 Giorno Senza Penalità</button>
                 </div>
                 <div class="edit-controls">
-                    <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--gray-200);">
-                        <p style="margin-bottom: 10px; font-size: 13px; font-weight: bold;">💾 Backup e Ripristino</p>
-                        <button class="btn-primary" onclick="exportData()" style="background: #6366f1;">📤 Esporta Dati</button>
-                        <button class="btn-primary" onclick="importData()" style="background: #8b5cf6;">📥 Importa Dati</button>
-                        <button class="btn-danger" onclick="resetData()" style="margin-left: 10px;">🔄 Reset</button>
-                    </div>
+                    <button class="btn-danger" onclick="window.resetData()">🔄 Ripristina Tutto</button>
                 </div>
             </div>
         </div>
@@ -138,78 +123,48 @@
                 <div class="item-list">
                     <div class="item"><span class="item-name">Completare compiti scolastici</span><span class="token-badge">1</span></div>
                     <div class="item"><span class="item-name">Riordinare quando chiesto da mamma</span><span class="token-badge">1</span></div>
-                    <div class="item"><span class="item-name">Rispettare il limite di tempo telefono (2 ore al giorno, 4 ore nei feriali)</span><span class="token-badge">1</span></div>
+                    <div class="item"><span class="item-name">Rispettare il limite di tempo telefono</span><span class="token-badge">1</span></div>
                     <div class="item"><span class="item-name">Mangiare tutto senza lamentarsi</span><span class="token-badge">1</span></div>
-                    <div class="item"><span class="item-name">Giocare con il cane per 20 minuti senza distrazioni</span><span class="token-badge">1</span></div>
-                    <div class="item"><span class="item-name">Bere un bicchiere d'acqua fuori pasto (max 5 punti al giorno)</span><span class="token-badge">1</span></div>
-                    <div class="item"><span class="item-name">Suonare la batteria elettrica per 30 minuti</span><span class="token-badge">1</span></div>
-                    <div class="item"><span class="item-name">Andare a letto entro le 22:30</span><span class="token-badge">1</span></div>
-                    <div class="item"><span class="item-name">Preparare lo zaino (1 token ogni 2 giorni)</span><span class="token-badge">1</span></div>
+                    <div class="item"><span class="item-name">Giocare con il cane (20 min)</span><span class="token-badge">1</span></div>
+                    <div class="item"><span class="item-name">Bere acqua (fuori pasto)</span><span class="token-badge">1</span></div>
+                    <div class="item"><span class="item-name">Suonare batteria (30 min)</span><span class="token-badge">1</span></div>
                 </div>
             </div>
 
             <div class="card pro-color">
                 <h2>🌟 Livello Pro (3 token)</h2>
                 <div class="item-list">
-                    <div class="item"><span class="item-name">Partecipare a visite mediche con coraggio</span><span class="token-badge">3</span></div>
-                    <div class="item"><span class="item-name">Leggere un libro di almeno 80 pagine (No fumetti)</span><span class="token-badge">3</span></div>
-                    <div class="item"><span class="item-name">Partecipare a un gioco di società completo (no smartphone)</span><span class="token-badge">3</span></div>
-                    <div class="item"><span class="item-name">Imparare una ricetta seguendo chi sta cucinando</span><span class="token-badge">3</span></div>
-                    <div class="item"><span class="item-name">Chiacchierare dal vivo con un parente</span><span class="token-badge">3</span></div>
+                    <div class="item"><span class="item-name">Visite mediche con coraggio</span><span class="token-badge">3</span></div>
+                    <div class="item"><span class="item-name">Leggere libro (80 pag)</span><span class="token-badge">3</span></div>
+                    <div class="item"><span class="item-name">Gioco di società completo</span><span class="token-badge">3</span></div>
+                    <div class="item"><span class="item-name">Imparare ricetta cucinando</span><span class="token-badge">3</span></div>
                 </div>
             </div>
 
             <div class="card vip-color">
                 <h2>🏆 Livello VIP (8 token)</h2>
                 <div class="item-list">
-                    <div class="item"><span class="item-name">Imparare a suonare un brano completo con la batteria</span><span class="token-badge">8</span></div>
-                    <div class="item"><span class="item-name">Creare un fumetto originale di almeno 8 tavole</span><span class="token-badge">8</span></div>
-                    <div class="item"><span class="item-name">Passare un giorno intero senza schermi (tv, smartphone, tablet...)</span><span class="token-badge">8</span></div>
-                    <div class="item"><span class="item-name">Prendere un voto alto (9 o 10)</span><span class="token-badge">8</span></div>
-                    <div class="item"><span class="item-name">Risparmiare i token per almeno 14 giorni anziché spenderli</span><span class="token-badge">8</span></div>
+                    <div class="item"><span class="item-name">Imparare brano completo batteria</span><span class="token-badge">8</span></div>
+                    <div class="item"><span class="item-name">Fumetto originale (8 tavole)</span><span class="token-badge">8</span></div>
+                    <div class="item"><span class="item-name">Giorno intero senza schermi</span><span class="token-badge">8</span></div>
                 </div>
             </div>
-        </div>
-
-        <div class="card" style="border-top: 5px solid var(--danger);">
-            <h2 style="color: var(--danger);">⚠️ Penalità</h2>
-            <div class="penalties-grid">
-                <div class="penalty-header">
-                    <span>Azione</span>
-                    <span>Costo</span>
-                </div>
-                <div class="penalty-row">
-                    <span class="penalty-name">Lamentarsi durante i pasti</span>
-                    <span class="penalty-badge">-1</span>
-                </div>
-                <div class="penalty-row">
-                    <span class="penalty-name">Fare i capricci</span>
-                    <span class="penalty-badge">-1</span>
-                </div>
-                <div class="penalty-row">
-                    <span class="penalty-name">Telefono oltre limite</span>
-                    <span class="penalty-badge">-2</span>
-                </div>
-                <div class="penalty-row">
-                    <span class="penalty-name">Non completare compiti</span>
-                    <span class="penalty-badge">-2</span>
-                </div>
-                <div class="penalty-row">
-                    <span class="penalty-name">Non mantenere le promesse</span>
-                    <span class="penalty-badge">-15</span>
-                </div>
-                <div class="penalty-row">
-                    <span class="penalty-name">Voto negativo a scuola</span>
-                    <span class="penalty-badge">-50</span>
-                </div>
-            </div>
-            <p style="margin-top: 15px; font-size: 13px; color: var(--gray-700); font-style: italic;">
-                * Le penalità resettano anche i giorni di streak accumulati.
-            </p>
         </div>
 
         <div class="card">
-            <h2>🎁 Bonus Streak (Giorni senza penalità)</h2>
+            <h2>⚠️ Penalità</h2>
+            <div class="penalties">
+                <div class="penalty-item"><span class="penalty-name">Telefono oltre limite</span><span class="penalty-value">-2</span></div>
+                <div class="penalty-item"><span class="penalty-name">Lamentarsi durante i pasti</span><span class="penalty-value">-1</span></div>
+                <div class="penalty-item"><span class="penalty-name">Non completare compiti</span><span class="penalty-value">-2</span></div>
+                <div class="penalty-item"><span class="penalty-name">Non mantenere promesse</span><span class="penalty-value">-15</span></div>
+                <div class="penalty-item"><span class="penalty-name">Fare i capricci</span><span class="penalty-value">-1</span></div>
+                <div class="penalty-item"><span class="penalty-name">Voto negativo a scuola</span><span class="penalty-value">-50</span></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🎁 Bonus Streak</h2>
             <div class="item-list">
                 <div class="item"><span class="item-name">7 giorni senza penalità</span><span class="token-badge">1</span></div>
                 <div class="item"><span class="item-name">14 giorni senza penalità</span><span class="token-badge">3</span></div>
@@ -219,55 +174,92 @@
         </div>
 
         <div class="card">
-            <h2>🎮 Premi (Scambio Token)</h2>
+            <h2>🎮 Premi</h2>
             <div class="section-title">60 Token</div>
-            <div class="premi-item"><div class="premi-header">Opzione A: Ricarica Play Store</div><div class="premi-option">Ricarica da 5 euro</div></div>
-            <div class="premi-item"><div class="premi-header">Opzione B: Cibo</div><div class="premi-option">Kebab</div></div>
+            <div class="premi-item"><div class="premi-header">Ricarica Play Store</div><div class="premi-option">5 euro</div></div>
+            <div class="premi-item"><div class="premi-header">Cibo</div><div class="premi-option">Kebab</div></div>
             <div class="section-title">120 Token</div>
-            <div class="premi-item"><div class="premi-header">Opzione A: Ricarica Play Store</div><div class="premi-option">Ricarica da 10 euro</div></div>
-            <div class="premi-item"><div class="premi-header">Opzione B: Cibo</div><div class="premi-option">McDonald's</div></div>
+            <div class="premi-item"><div class="premi-header">Ricarica Play Store</div><div class="premi-option">10 euro</div></div>
+            <div class="premi-item"><div class="premi-header">Cibo</div><div class="premi-option">McDonald's</div></div>
             <div class="section-title">180 Token</div>
-            <div class="premi-item"><div class="premi-header">Opzione A: Ricarica Play Store</div><div class="premi-option">Ricarica da 20 euro</div></div>
-            <div class="premi-item"><div class="premi-header">Opzione B: Cibo</div><div class="premi-option">Mangiare sushi</div></div>
-            <div style="background: var(--warning); color: white; padding: 15px; border-radius: 8px; margin-top: 20px; font-size: 13px;">ℹ️ È possibile barattare token per quello che vuole, purché sia d'accordo la mamma. Se non è d'accordo, non insistere. Insistere comporta penalità di 3 token.</div>
+            <div class="premi-item"><div class="premi-header">Ricarica Play Store</div><div class="premi-option">20 euro</div></div>
+            <div class="premi-item"><div class="premi-header">Cibo</div><div class="premi-option">Sushi</div></div>
         </div>
 
         <div class="footer">
-            <p>Token Economy Tracker | Sistema di gestione comportamenti positivi</p>
+            <p>Token Economy Tracker | Cloud Connected</p>
         </div>
     </div>
 
-    <script>
+    <script type="module">
+        // Importazione delle librerie Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-database.js";
+
+        // La tua configurazione Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyCBFhqkOB9ZsNbEo2EUQWOK9Q7OMVCkarc",
+            authDomain: "brunomarstokens.firebaseapp.com",
+            databaseURL: "https://brunomarstokens-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "brunomarstokens",
+            storageBucket: "brunomarstokens.firebasestorage.app",
+            messagingSenderId: "457405323641",
+            appId: "1:457405323641:web:7c9576d87b8a540b7fb7a8"
+        };
+
+        // Inizializza Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const dbRef = ref(db, 'tokenEconomy');
+
+        // Password Admin
         const ADMIN_PASSWORD = "FalkorMiuraFrechete";
 
-        function loadData() {
-            const saved = localStorage.getItem('tokenEconomy');
-            if (saved) {
-                return JSON.parse(saved);
-            }
-            return {
-                totalTokens: 0,
-                streakDays: 0,
-                baseTokens: 0,
-                proTokens: 0,
-                vipTokens: 0,
-                penaltyTokens: 0,
-                history: []
-            };
-        }
+        // Struttura dati locale (si aggiorna automaticamente dal cloud)
+        let currentData = {
+            totalTokens: 0,
+            streakDays: 0,
+            baseTokens: 0,
+            proTokens: 0,
+            vipTokens: 0,
+            penaltyTokens: 0,
+            history: []
+        };
 
-        function saveData(data) {
-            localStorage.setItem('tokenEconomy', JSON.stringify(data));
+        // --- ASCOLTATORE CLOUD ---
+        // Questa funzione parte ogni volta che i dati cambiano online!
+        document.getElementById('loading').style.display = 'block';
+        
+        onValue(dbRef, (snapshot) => {
+            const data = snapshot.val();
+            document.getElementById('loading').style.display = 'none';
+            
+            if (data) {
+                currentData = data;
+                // Assicuriamoci che l'array history esista
+                if (!currentData.history) currentData.history = [];
+            } else {
+                // Primo avvio assoluto
+                saveDataToCloud(); 
+            }
+            updateDisplay();
+            updateHistory();
+        });
+
+        // --- FUNZIONI DI SALVATAGGIO ---
+        function saveDataToCloud() {
+            set(dbRef, currentData)
+                .then(() => console.log("Dati salvati su Firebase"))
+                .catch((error) => alert("Errore di connessione: " + error));
         }
 
         function addToHistory(type, amount, description) {
-            const data = loadData();
-            if (!data.history) data.history = [];
-            
             const now = new Date();
             const timeStr = now.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
             
-            data.history.unshift({
+            if (!currentData.history) currentData.history = [];
+
+            currentData.history.unshift({
                 type: type,
                 amount: amount,
                 description: description,
@@ -275,41 +267,31 @@
                 date: now.toLocaleDateString('it-IT')
             });
             
-            if (data.history.length > 20) {
-                data.history = data.history.slice(0, 20);
+            if (currentData.history.length > 20) {
+                currentData.history = currentData.history.slice(0, 20);
             }
             
-            saveData(data);
-            updateHistory();
+            saveDataToCloud();
         }
 
+        // --- FUNZIONI DI VISUALIZZAZIONE ---
         function updateHistory() {
-            const data = loadData();
             const historyList = document.getElementById('historyList');
             
-            if (!data.history || data.history.length === 0) {
+            if (!currentData.history || currentData.history.length === 0) {
                 historyList.innerHTML = '<p style="color: var(--gray-700); font-size: 13px;">Nessun movimento ancora...</p>';
                 return;
             }
             
             let html = '';
-            data.history.forEach(item => {
+            currentData.history.forEach(item => {
                 let typeClass = 'type-base';
                 let typeEmoji = '📌';
                 
-                if (item.type === 'pro') {
-                    typeClass = 'type-pro';
-                    typeEmoji = '⭐';
-                } else if (item.type === 'vip') {
-                    typeClass = 'type-vip';
-                    typeEmoji = '🏆';
-                } else if (item.type === 'penalty') {
-                    typeClass = 'type-penalty';
-                    typeEmoji = '⚠️';
-                } else if (item.type === 'streak') {
-                    typeClass = 'type-streak';
-                    typeEmoji = '🎉';
-                }
+                if (item.type === 'pro') { typeClass = 'type-pro'; typeEmoji = '⭐'; } 
+                else if (item.type === 'vip') { typeClass = 'type-vip'; typeEmoji = '🏆'; } 
+                else if (item.type === 'penalty') { typeClass = 'type-penalty'; typeEmoji = '⚠️'; } 
+                else if (item.type === 'streak') { typeClass = 'type-streak'; typeEmoji = '🎉'; }
                 
                 const sign = item.amount > 0 ? '+' : '';
                 const color = item.amount > 0 ? 'var(--success)' : 'var(--danger)';
@@ -318,7 +300,7 @@
                     <div class="history-item">
                         <div>
                             <span class="history-type ${typeClass}">${typeEmoji} ${item.type.toUpperCase()}</span>
-                            <span style="margin-left: 8px; font-size: 12px; color: var(--gray-700);">${item.time}</span>
+                            <span style="margin-left: 8px; font-size: 12px; color: var(--gray-700);">${item.time} - ${item.description}</span>
                         </div>
                         <div style="text-align: right;">
                             <div style="color: ${color}; font-weight: bold;">${sign}${item.amount}</div>
@@ -331,164 +313,109 @@
         }
 
         function updateDisplay() {
-            const data = loadData();
-            document.getElementById('totalTokens').textContent = data.totalTokens;
-            document.getElementById('streakDays').textContent = data.streakDays;
-            document.getElementById('baseTokens').textContent = data.baseTokens;
-            document.getElementById('proTokens').textContent = data.proTokens;
-            document.getElementById('vipTokens').textContent = data.vipTokens;
-            document.getElementById('penaltyTokens').textContent = data.penaltyTokens;
+            document.getElementById('totalTokens').textContent = currentData.totalTokens;
+            document.getElementById('streakDays').textContent = currentData.streakDays;
+            document.getElementById('baseTokens').textContent = currentData.baseTokens;
+            document.getElementById('proTokens').textContent = currentData.proTokens;
+            document.getElementById('vipTokens').textContent = currentData.vipTokens;
+            document.getElementById('penaltyTokens').textContent = currentData.penaltyTokens;
         }
 
-        function checkPassword() {
+        // --- FUNZIONI INTERATTIVE (Esposte globalmente per i pulsanti HTML) ---
+        window.checkPassword = function() {
             const password = document.getElementById('adminPassword').value;
             if (password === ADMIN_PASSWORD) {
                 document.getElementById('editContent').style.display = 'block';
                 document.getElementById('adminPassword').style.display = 'none';
-                document.querySelector('button[onclick="checkPassword()"]').style.display = 'none';
-                alert('🔓 Accesso sbloccato! Puoi ora modificare i token.');
-            } else if (password === '') {
-                alert('⚠️ Inserisci la password');
+                document.querySelector('button[onclick="window.checkPassword()"]').style.display = 'none';
+                alert('🔓 Modifiche abilitate!');
             } else {
                 alert('❌ Password sbagliata!');
                 document.getElementById('adminPassword').value = '';
             }
         }
 
-        function addTokenTyped() {
+        window.addTokenTyped = function() {
             const amount = parseInt(document.getElementById('tokenAmount').value) || 1;
             const type = document.getElementById('tokenType').value;
-            const data = loadData();
             
-            data.totalTokens += amount;
+            currentData.totalTokens += amount;
             
-            if (type === 'base') {
-                data.baseTokens += amount;
-            } else if (type === 'pro') {
-                data.proTokens += amount;
-            } else if (type === 'vip') {
-                data.vipTokens += amount;
-            }
+            if (type === 'base') currentData.baseTokens += amount;
+            else if (type === 'pro') currentData.proTokens += amount;
+            else if (type === 'vip') currentData.vipTokens += amount;
             
-            saveData(data);
-            updateDisplay();
-            addToHistory(type, amount, `Aggiunti ${amount} token ${type}`);
-            alert(`✅ Aggiunti ${amount} token ${type.toUpperCase()}!`);
+            addToHistory(type, amount, `Aggiunti token`);
+            alert(`✅ Aggiunti ${amount} token!`);
         }
 
-        function removeTokenTyped() {
+        window.removeTokenTyped = function() {
             const amount = parseInt(document.getElementById('tokenAmount').value) || 1;
             const type = document.getElementById('tokenType').value;
-            const data = loadData();
             
-            data.totalTokens = Math.max(0, data.totalTokens - amount);
+            currentData.totalTokens = Math.max(0, currentData.totalTokens - amount);
             
-            if (type === 'base') {
-                data.baseTokens = Math.max(0, data.baseTokens - amount);
-            } else if (type === 'pro') {
-                data.proTokens = Math.max(0, data.proTokens - amount);
-            } else if (type === 'vip') {
-                data.vipTokens = Math.max(0, data.vipTokens - amount);
-            }
+            if (type === 'base') currentData.baseTokens = Math.max(0, currentData.baseTokens - amount);
+            else if (type === 'pro') currentData.proTokens = Math.max(0, currentData.proTokens - amount);
+            else if (type === 'vip') currentData.vipTokens = Math.max(0, currentData.vipTokens - amount);
             
-            saveData(data);
-            updateDisplay();
-            addToHistory(type, -amount, `Rimossi ${amount} token ${type}`);
-            alert(`❌ Rimossi ${amount} token ${type.toUpperCase()}!`);
+            addToHistory(type, -amount, `Rimossi token`);
+            alert(`❌ Rimossi ${amount} token!`);
         }
 
-        function addPenalty() {
+        window.addPenalty = function() {
             const amount = parseInt(document.getElementById('penaltyAmount').value) || 1;
-            const data = loadData();
-            data.totalTokens = Math.max(0, data.totalTokens - amount);
-            data.penaltyTokens += amount;
-            data.streakDays = 0;
-            saveData(data);
-            updateDisplay();
+            
+            currentData.totalTokens = Math.max(0, currentData.totalTokens - amount);
+            currentData.penaltyTokens += amount;
+            currentData.streakDays = 0;
+            
             addToHistory('penalty', -amount, `Penalità applicata`);
-            alert(`⚠️ Applicata penalità di ${amount} token! Streak resettato.`);
+            alert(`⚠️ Penalità di ${amount} applicata! Streak azzerato.`);
         }
 
-        function addStreakDay() {
-            const data = loadData();
-            data.streakDays += 1;
-
-            if (data.streakDays === 7 || data.streakDays === 14 || data.streakDays === 21 || data.streakDays === 28) {
-                const rewards = { 7: 1, 14: 3, 21: 6, 28: 10 };
-                const bonus = rewards[data.streakDays];
-                data.totalTokens += bonus;
-                saveData(data);
-                updateDisplay();
-                addToHistory('streak', bonus, `Bonus ${data.streakDays} giorni`);
-                alert(`🎉 Complimenti! Hai raggiunto ${data.streakDays} giorni senza penalità! Bonus: +${bonus} token!`);
-            } else {
-                saveData(data);
-                updateDisplay();
-                addToHistory('streak', 0, `+1 giorno streak`);
-            }
+        window.addStreakDay = function() {
+            currentData.streakDays += 1;
+            checkStreakBonus(currentData.streakDays);
         }
 
-        function setStreakDays() {
+        window.setStreakDays = function() {
             const days = parseInt(document.getElementById('streakInput').value) || 1;
-            const data = loadData();
-            data.streakDays = days;
-
+            currentData.streakDays = days;
+            
             if (days === 7 || days === 14 || days === 21 || days === 28) {
-                const rewards = { 7: 1, 14: 3, 21: 6, 28: 10 };
-                const bonus = rewards[days];
-                data.totalTokens += bonus;
-                saveData(data);
-                updateDisplay();
-                addToHistory('streak', bonus, `Bonus ${days} giorni`);
-                alert(`🎉 Hai raggiunto ${days} giorni senza penalità! Bonus: +${bonus} token!`);
+                checkStreakBonus(days);
             } else {
-                saveData(data);
-                updateDisplay();
                 addToHistory('streak', 0, `Impostati ${days} giorni`);
-                alert(`✅ Impostati ${days} giorni senza penalità!`);
+                saveDataToCloud();
+                alert(`✅ Giorni impostati a ${days}`);
             }
         }
 
-        function resetData() {
-            if (confirm('Sei sicuro di voler resettare tutti i dati? Questa azione non può essere annullata.')) {
-                localStorage.removeItem('tokenEconomy');
-                updateDisplay();
-                updateHistory();
-                alert('🔄 Dati resettati!');
+        function checkStreakBonus(days) {
+            const rewards = { 7: 1, 14: 3, 21: 6, 28: 10 };
+            
+            if (rewards[days]) {
+                const bonus = rewards[days];
+                currentData.totalTokens += bonus;
+                addToHistory('streak', bonus, `Bonus ${days} giorni!`);
+                alert(`🎉 Raggiunti ${days} giorni! Bonus: +${bonus} token!`);
+            } else {
+                addToHistory('streak', 0, `+1 giorno streak`);
+                saveDataToCloud();
             }
         }
 
-        function exportData() {
-            const data = loadData();
-            const dataStr = JSON.stringify(data);
-            navigator.clipboard.writeText(dataStr).then(() => {
-                alert('✅ Dati copiati negli appunti!\n\nInvia questo testo al tuo altro dispositivo (mail, whatsapp, telegram...) e usa "Importa Dati" sull\'altro dispositivo.');
-            }).catch(err => {
-                prompt("Copia questo testo manualmente:", dataStr);
-            });
-        }
-
-        function importData() {
-            const input = prompt("Incolla qui i dati esportati dall'altro dispositivo:");
-            if (input) {
-                try {
-                    const data = JSON.parse(input);
-                    if (data && typeof data.totalTokens === 'number') {
-                        saveData(data);
-                        updateDisplay();
-                        updateHistory();
-                        alert('✅ Dati importati con successo!');
-                    } else {
-                        alert('❌ I dati incollati non sembrano validi.');
-                    }
-                } catch (e) {
-                    alert('❌ Errore nella lettura dei dati. Assicurati di aver copiato tutto il testo.');
-                }
+        window.resetData = function() {
+            if (confirm('SICURO? Cancellerà tutto per TUTTI i dispositivi.')) {
+                currentData = {
+                    totalTokens: 0, streakDays: 0, baseTokens: 0,
+                    proTokens: 0, vipTokens: 0, penaltyTokens: 0, history: []
+                };
+                saveDataToCloud();
+                alert('🔄 Tutto resettato.');
             }
         }
-
-        updateDisplay();
-        updateHistory();
     </script>
 </body>
 </html>
