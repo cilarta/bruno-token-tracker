@@ -30,65 +30,16 @@
         .token-badge { background: var(--primary); color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 12px; }
 
         /* NUOVI STILI PENALITÀ SCHEMATIZZATI */
-        .penalty-container {
-            border-top: 4px solid var(--danger);
-        }
-        .penalties-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 15px;
-            margin-top: 10px;
-        }
-        .penalty-card {
-            background-color: #fef2f2; /* Rosso chiarissimo */
-            border: 2px solid #fecaca;
-            border-radius: 12px;
-            padding: 15px 10px;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: space-between;
-            height: 100%;
-            transition: all 0.2s ease;
-        }
-        .penalty-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 10px rgba(239, 68, 68, 0.2);
-            border-color: var(--danger);
-        }
-        .penalty-icon {
-            font-size: 28px;
-            margin-bottom: 8px;
-        }
-        .penalty-desc {
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--gray-900);
-            margin-bottom: 8px;
-            line-height: 1.3;
-        }
-        .penalty-value {
-            background: white;
-            color: var(--danger);
-            border: 1px solid var(--danger);
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-weight: 800;
-            font-size: 14px;
-        }
-        /* Stile speciale per penalità gravi */
-        .penalty-severe {
-            background-color: #fee2e2;
-            border: 2px solid #ef4444;
-        }
-        .penalty-severe .penalty-value {
-            background: var(--danger);
-            color: white;
-        }
-        .penalty-severe .penalty-desc {
-            color: var(--danger-dark);
-        }
+        .penalty-container { border-top: 4px solid var(--danger); }
+        .penalties-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; margin-top: 10px; }
+        .penalty-card { background-color: #fef2f2; border: 2px solid #fecaca; border-radius: 12px; padding: 15px 10px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 100%; transition: all 0.2s ease; }
+        .penalty-card:hover { transform: translateY(-3px); box-shadow: 0 4px 10px rgba(239, 68, 68, 0.2); border-color: var(--danger); }
+        .penalty-icon { font-size: 28px; margin-bottom: 8px; }
+        .penalty-desc { font-size: 13px; font-weight: 600; color: var(--gray-900); margin-bottom: 8px; line-height: 1.3; }
+        .penalty-value { background: white; color: var(--danger); border: 1px solid var(--danger); padding: 4px 12px; border-radius: 20px; font-weight: 800; font-size: 14px; }
+        .penalty-severe { background-color: #fee2e2; border: 2px solid #ef4444; }
+        .penalty-severe .penalty-value { background: var(--danger); color: white; }
+        .penalty-severe .penalty-desc { color: var(--danger-dark); }
 
         /* Altri stili */
         .section-title { background: var(--primary); color: white; padding: 15px; border-radius: 8px; margin: 20px 0 15px; font-size: 16px; font-weight: bold; }
@@ -96,9 +47,16 @@
         .premi-header { font-weight: bold; color: var(--primary); margin-bottom: 8px; }
         .premi-option { font-size: 13px; margin: 5px 0 5px 20px; }
         .footer { background: white; padding: 20px; border-radius: 10px; text-align: center; font-size: 13px; color: var(--gray-700); margin-top: 30px; }
-        .edit-section { background: var(--gray-100); padding: 20px; border-radius: 10px; margin: 30px 0; }
-        .edit-controls { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
-        input[type="password"], input[type="number"], input[type="text"], select { padding: 8px 12px; border: 1px solid var(--gray-200); border-radius: 6px; font-size: 14px; }
+        
+        /* Edit Section Migliorata */
+        .edit-section { background: var(--gray-100); padding: 20px; border-radius: 10px; margin: 30px 0; border: 2px solid var(--primary); }
+        .edit-controls { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; align-items: center; }
+        
+        /* Campo descrizione personalizzato */
+        .reason-input { width: 100%; padding: 12px; border: 2px solid var(--gray-200); border-radius: 8px; font-size: 16px; margin-bottom: 15px; }
+        .reason-input:focus { border-color: var(--primary); outline: none; }
+
+        input[type="password"], input[type="number"], select { padding: 8px 12px; border: 1px solid var(--gray-200); border-radius: 6px; font-size: 14px; }
         button { padding: 10px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; }
         .btn-primary { background: var(--primary); color: white; }
         .btn-primary:hover { background: var(--primary-dark); }
@@ -106,6 +64,7 @@
         .btn-success:hover { background: #059669; }
         .btn-danger { background: var(--danger); color: white; }
         .btn-danger:hover { background: #dc2626; }
+        
         .status { background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
         .status-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--gray-200); }
         .status-item:last-child { border-bottom: none; }
@@ -153,6 +112,9 @@
                 <button class="btn-primary" onclick="window.checkPassword()">🔓 Sblocca Modifiche</button>
             </div>
             <div id="editContent" style="display: none;">
+                
+                <input type="text" id="customReason" class="reason-input" placeholder="📝 Scrivi qui il motivo (es. Compiti di matematica, Capricci...)">
+
                 <div class="edit-controls">
                     <select id="tokenType">
                         <option value="base">📌 Token Base</option>
@@ -160,17 +122,20 @@
                         <option value="vip">🏆 Token VIP</option>
                     </select>
                     <input type="number" id="tokenAmount" placeholder="Numero token" value="1" min="1">
-                    <button class="btn-success" onclick="window.addTokenTyped()">+ Aggiungi Token</button>
-                    <button class="btn-danger" onclick="window.removeTokenTyped()">- Rimuovi Token</button>
+                    <button class="btn-success" onclick="window.addTokenTyped()">+ Aggiungi</button>
+                    <button class="btn-danger" onclick="window.removeTokenTyped()">- Rimuovi</button>
                 </div>
+                
+                <hr style="margin: 15px 0; border: 0; border-top: 1px solid #ccc;">
+
                 <div class="edit-controls">
                     <input type="number" id="penaltyAmount" placeholder="Penalità" value="1" min="1" max="2">
-                    <button class="btn-danger" onclick="window.addPenalty()">Applica Penalità</button>
+                    <button class="btn-danger" onclick="window.addPenalty()">⚠️ Applica Penalità</button>
                 </div>
                 <div class="edit-controls">
                     <input type="number" id="streakInput" placeholder="Giorni senza penalità" value="1" min="1">
                     <button class="btn-primary" onclick="window.setStreakDays()">Imposta Giorni Senza Penalità</button>
-                    <button class="btn-primary" onclick="window.addStreakDay()">+ 1 Giorno Senza Penalità</button>
+                    <button class="btn-primary" onclick="window.addStreakDay()">+ 1 Giorno</button>
                 </div>
                 <div class="edit-controls">
                     <button class="btn-danger" onclick="window.resetData()">🔄 Ripristina Tutto</button>
@@ -277,11 +242,9 @@
     </div>
 
     <script type="module">
-        // Importazione delle librerie Firebase
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
         import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-database.js";
 
-        // La tua configurazione Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyCBFhqkOB9ZsNbEo2EUQWOK9Q7OMVCkarc",
             authDomain: "brunomarstokens.firebaseapp.com",
@@ -292,15 +255,11 @@
             appId: "1:457405323641:web:7c9576d87b8a540b7fb7a8"
         };
 
-        // Inizializza Firebase
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
         const dbRef = ref(db, 'tokenEconomy');
-
-        // Password Admin
         const ADMIN_PASSWORD = "FalkorMiuraFrechete";
 
-        // Struttura dati locale (si aggiorna automaticamente dal cloud)
         let currentData = {
             totalTokens: 0,
             streakDays: 0,
@@ -311,27 +270,21 @@
             history: []
         };
 
-        // --- ASCOLTATORE CLOUD ---
-        // Questa funzione parte ogni volta che i dati cambiano online!
         document.getElementById('loading').style.display = 'block';
         
         onValue(dbRef, (snapshot) => {
             const data = snapshot.val();
             document.getElementById('loading').style.display = 'none';
-            
             if (data) {
                 currentData = data;
-                // Assicuriamoci che l'array history esista
                 if (!currentData.history) currentData.history = [];
             } else {
-                // Primo avvio assoluto
                 saveDataToCloud(); 
             }
             updateDisplay();
             updateHistory();
         });
 
-        // --- FUNZIONI DI SALVATAGGIO ---
         function saveDataToCloud() {
             set(dbRef, currentData)
                 .then(() => console.log("Dati salvati su Firebase"))
@@ -341,7 +294,6 @@
         function addToHistory(type, amount, description) {
             const now = new Date();
             const timeStr = now.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
-            
             if (!currentData.history) currentData.history = [];
 
             currentData.history.unshift({
@@ -355,14 +307,11 @@
             if (currentData.history.length > 20) {
                 currentData.history = currentData.history.slice(0, 20);
             }
-            
             saveDataToCloud();
         }
 
-        // --- FUNZIONI DI VISUALIZZAZIONE ---
         function updateHistory() {
             const historyList = document.getElementById('historyList');
-            
             if (!currentData.history || currentData.history.length === 0) {
                 historyList.innerHTML = '<p style="color: var(--gray-700); font-size: 13px;">Nessun movimento ancora...</p>';
                 return;
@@ -372,7 +321,6 @@
             currentData.history.forEach(item => {
                 let typeClass = 'type-base';
                 let typeEmoji = '📌';
-                
                 if (item.type === 'pro') { typeClass = 'type-pro'; typeEmoji = '⭐'; } 
                 else if (item.type === 'vip') { typeClass = 'type-vip'; typeEmoji = '🏆'; } 
                 else if (item.type === 'penalty') { typeClass = 'type-penalty'; typeEmoji = '⚠️'; } 
@@ -393,7 +341,6 @@
                     </div>
                 `;
             });
-            
             historyList.innerHTML = html;
         }
 
@@ -406,7 +353,6 @@
             document.getElementById('penaltyTokens').textContent = currentData.penaltyTokens;
         }
 
-        // --- FUNZIONI INTERATTIVE (Esposte globalmente per i pulsanti HTML) ---
         window.checkPassword = function() {
             const password = document.getElementById('adminPassword').value;
             if (password === ADMIN_PASSWORD) {
@@ -420,18 +366,26 @@
             }
         }
 
+        // FUNZIONE PER OTTENERE LA DESCRIZIONE PERSONALIZZATA
+        function getReason(defaultText) {
+            const input = document.getElementById('customReason');
+            const reason = input.value.trim();
+            input.value = ''; // Pulisce il campo dopo l'uso
+            return reason !== "" ? reason : defaultText;
+        }
+
         window.addTokenTyped = function() {
             const amount = parseInt(document.getElementById('tokenAmount').value) || 1;
             const type = document.getElementById('tokenType').value;
             
             currentData.totalTokens += amount;
-            
             if (type === 'base') currentData.baseTokens += amount;
             else if (type === 'pro') currentData.proTokens += amount;
             else if (type === 'vip') currentData.vipTokens += amount;
             
-            addToHistory(type, amount, `Aggiunti token`);
-            alert(`✅ Aggiunti ${amount} token!`);
+            const reason = getReason("Aggiunti token");
+            addToHistory(type, amount, reason);
+            alert(`✅ ${amount} token aggiunti!`);
         }
 
         window.removeTokenTyped = function() {
@@ -439,13 +393,13 @@
             const type = document.getElementById('tokenType').value;
             
             currentData.totalTokens = Math.max(0, currentData.totalTokens - amount);
-            
             if (type === 'base') currentData.baseTokens = Math.max(0, currentData.baseTokens - amount);
             else if (type === 'pro') currentData.proTokens = Math.max(0, currentData.proTokens - amount);
             else if (type === 'vip') currentData.vipTokens = Math.max(0, currentData.vipTokens - amount);
             
-            addToHistory(type, -amount, `Rimossi token`);
-            alert(`❌ Rimossi ${amount} token!`);
+            const reason = getReason("Rimossi token");
+            addToHistory(type, -amount, reason);
+            alert(`❌ ${amount} token rimossi!`);
         }
 
         window.addPenalty = function() {
@@ -455,8 +409,9 @@
             currentData.penaltyTokens += amount;
             currentData.streakDays = 0;
             
-            addToHistory('penalty', -amount, `Penalità applicata`);
-            alert(`⚠️ Penalità di ${amount} applicata! Streak azzerato.`);
+            const reason = getReason("Penalità applicata");
+            addToHistory('penalty', -amount, reason);
+            alert(`⚠️ Penalità di ${amount} applicata!`);
         }
 
         window.addStreakDay = function() {
@@ -479,7 +434,6 @@
 
         function checkStreakBonus(days) {
             const rewards = { 7: 1, 14: 3, 21: 6, 28: 10 };
-            
             if (rewards[days]) {
                 const bonus = rewards[days];
                 currentData.totalTokens += bonus;
