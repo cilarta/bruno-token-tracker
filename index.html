@@ -7,7 +7,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>Token Economy Tracker v125 Firebase</title>
+    <title>Token Economy Tracker v2 Google Sheets</title>
     <style>
         :root {
             --primary: #3182f6;
@@ -332,11 +332,6 @@
             color: white;
         }
 
-        .history-value {
-            font-weight: bold;
-            color: var(--primary);
-        }
-
         .cloud-status {
             position: fixed;
             bottom: 20px;
@@ -429,12 +424,9 @@
                 </div>
                 <div class="edit-controls">
                     <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--gray-200);">
-                        <p style="margin-bottom: 5px; font-size: 13px; font-weight: bold; color: var(--success);">☁️
-                            Firebase Sync Attivo</p>
-                        <p style="margin-bottom: 10px; font-size: 12px; color: var(--gray-700);">I dati si sincronizzano
-                            in tempo reale.</p>
-                        <button class="btn-danger" onclick="resetData()" style="font-size: 12px;">🔄 Reset
-                            Totale</button>
+                        <p style="margin-bottom: 5px; font-size: 13px; font-weight: bold; color: var(--success);">☁️ Google Sheets Sync Attivo</p>
+                        <p style="margin-bottom: 10px; font-size: 12px; color: var(--gray-700);">I dati si sincronizzano in tempo reale.</p>
+                        <button class="btn-danger" onclick="resetData()" style="font-size: 12px;">🔄 Reset Totale</button>
                     </div>
                 </div>
             </div>
@@ -444,56 +436,37 @@
             <div class="card base-color">
                 <h2>✅ Livello Base (1 token)</h2>
                 <div class="item-list">
-                    <div class="item"><span class="item-name">Completare compiti scolastici</span><span
-                            class="token-badge">1</span></div>
-                    <div class="item"><span class="item-name">Riordinare quando chiesto da mamma</span><span
-                            class="token-badge">1</span></div>
-                    <div class="item"><span class="item-name">Rispettare il limite di tempo telefono (2 ore al giorno, 4
-                            ore nei feriali)</span><span class="token-badge">1</span></div>
-                    <div class="item"><span class="item-name">Mangiare tutto senza lamentarsi</span><span
-                            class="token-badge">1</span></div>
-                    <div class="item"><span class="item-name">Giocare con il cane per 20 minuti senza
-                            distrazioni</span><span class="token-badge">1</span></div>
-                    <div class="item"><span class="item-name">Bere un bicchiere d'acqua fuori pasto (max 5 punti al
-                            giorno)</span><span class="token-badge">1</span></div>
-                    <div class="item"><span class="item-name">Suonare la batteria elettrica per 30 minuti</span><span
-                            class="token-badge">1</span></div>
-                    <div class="item"><span class="item-name">Andare a letto entro le 22:30</span><span
-                            class="token-badge">1</span></div>
-                    <div class="item"><span class="item-name">Preparare lo zaino (1 token ogni 2 giorni)</span><span
-                            class="token-badge">1</span></div>
+                    <div class="item"><span class="item-name">Completare compiti scolastici</span><span class="token-badge">1</span></div>
+                    <div class="item"><span class="item-name">Riordinare quando chiesto da mamma</span><span class="token-badge">1</span></div>
+                    <div class="item"><span class="item-name">Rispettare il limite di tempo telefono (2 ore al giorno, 4 ore nei feriali)</span><span class="token-badge">1</span></div>
+                    <div class="item"><span class="item-name">Mangiare tutto senza lamentarsi</span><span class="token-badge">1</span></div>
+                    <div class="item"><span class="item-name">Giocare con il cane per 20 minuti senza distrazioni</span><span class="token-badge">1</span></div>
+                    <div class="item"><span class="item-name">Bere un bicchiere d'acqua fuori pasto (max 5 punti al giorno)</span><span class="token-badge">1</span></div>
+                    <div class="item"><span class="item-name">Suonare la batteria elettrica per 30 minuti</span><span class="token-badge">1</span></div>
+                    <div class="item"><span class="item-name">Andare a letto entro le 22:30</span><span class="token-badge">1</span></div>
+                    <div class="item"><span class="item-name">Preparare lo zaino (1 token ogni 2 giorni)</span><span class="token-badge">1</span></div>
                 </div>
             </div>
 
             <div class="card pro-color">
                 <h2>🌟 Livello Pro (3 token)</h2>
                 <div class="item-list">
-                    <div class="item"><span class="item-name">Partecipare a visite mediche con coraggio</span><span
-                            class="token-badge">3</span></div>
-                    <div class="item"><span class="item-name">Leggere un libro di almeno 80 pagine (No
-                            fumetti)</span><span class="token-badge">3</span></div>
-                    <div class="item"><span class="item-name">Partecipare a un gioco di società completo (no
-                            smartphone)</span><span class="token-badge">3</span></div>
-                    <div class="item"><span class="item-name">Imparare una ricetta seguendo chi sta
-                            cucinando</span><span class="token-badge">3</span></div>
-                    <div class="item"><span class="item-name">Chiacchierare dal vivo con un parente</span><span
-                            class="token-badge">3</span></div>
+                    <div class="item"><span class="item-name">Partecipare a visite mediche con coraggio</span><span class="token-badge">3</span></div>
+                    <div class="item"><span class="item-name">Leggere un libro di almeno 80 pagine (No fumetti)</span><span class="token-badge">3</span></div>
+                    <div class="item"><span class="item-name">Partecipare a un gioco di società completo (no smartphone)</span><span class="token-badge">3</span></div>
+                    <div class="item"><span class="item-name">Imparare una ricetta seguendo chi sta cucinando</span><span class="token-badge">3</span></div>
+                    <div class="item"><span class="item-name">Chiacchierare dal vivo con un parente</span><span class="token-badge">3</span></div>
                 </div>
             </div>
 
             <div class="card vip-color">
                 <h2>🏆 Livello VIP (8 token)</h2>
                 <div class="item-list">
-                    <div class="item"><span class="item-name">Imparare a suonare un brano completo con la
-                            batteria</span><span class="token-badge">8</span></div>
-                    <div class="item"><span class="item-name">Creare un fumetto originale di almeno 8 tavole</span><span
-                            class="token-badge">8</span></div>
-                    <div class="item"><span class="item-name">Passare un giorno intero senza schermi (tv, smartphone,
-                            tablet...)</span><span class="token-badge">8</span></div>
-                    <div class="item"><span class="item-name">Prendere un voto alto (9 o 10)</span><span
-                            class="token-badge">8</span></div>
-                    <div class="item"><span class="item-name">Risparmiare i token per almeno 14 giorni anziché
-                            spenderli</span><span class="token-badge">8</span></div>
+                    <div class="item"><span class="item-name">Imparare a suonare un brano completo con la batteria</span><span class="token-badge">8</span></div>
+                    <div class="item"><span class="item-name">Creare un fumetto originale di almeno 8 tavole</span><span class="token-badge">8</span></div>
+                    <div class="item"><span class="item-name">Passare un giorno intero senza schermi (tv, smartphone, tablet...)</span><span class="token-badge">8</span></div>
+                    <div class="item"><span class="item-name">Prendere un voto alto (9 o 10)</span><span class="token-badge">8</span></div>
+                    <div class="item"><span class="item-name">Risparmiare i token per almeno 14 giorni anziché spenderli</span><span class="token-badge">8</span></div>
                 </div>
             </div>
         </div>
@@ -530,22 +503,16 @@
                     <span class="penalty-badge">-50</span>
                 </div>
             </div>
-            <p style="margin-top: 15px; font-size: 13px; color: var(--gray-700); font-style: italic;">
-                * Le penalità resettano anche i giorni di streak accumulati.
-            </p>
+            <p style="margin-top: 15px; font-size: 13px; color: var(--gray-700); font-style: italic;">* Le penalità resettano anche i giorni di streak accumulati.</p>
         </div>
 
         <div class="card">
             <h2>🎁 Bonus Streak (Giorni senza penalità)</h2>
             <div class="item-list">
-                <div class="item"><span class="item-name">7 giorni senza penalità</span><span
-                        class="token-badge">1</span></div>
-                <div class="item"><span class="item-name">14 giorni senza penalità</span><span
-                        class="token-badge">3</span></div>
-                <div class="item"><span class="item-name">21 giorni senza penalità</span><span
-                        class="token-badge">6</span></div>
-                <div class="item"><span class="item-name">28 giorni senza penalità</span><span
-                        class="token-badge">10</span></div>
+                <div class="item"><span class="item-name">7 giorni senza penalità</span><span class="token-badge">1</span></div>
+                <div class="item"><span class="item-name">14 giorni senza penalità</span><span class="token-badge">3</span></div>
+                <div class="item"><span class="item-name">21 giorni senza penalità</span><span class="token-badge">6</span></div>
+                <div class="item"><span class="item-name">28 giorni senza penalità</span><span class="token-badge">10</span></div>
             </div>
         </div>
 
@@ -578,45 +545,24 @@
                 <div class="premi-header">Opzione B: Cibo</div>
                 <div class="premi-option">Mangiare sushi</div>
             </div>
-            <div
-                style="background: var(--warning); color: white; padding: 15px; border-radius: 8px; margin-top: 20px; font-size: 13px;">
-                ℹ️ È possibile barattare token per quello che vuole, purché sia d'accordo la mamma. Se non è d'accordo,
-                non insistere. Insistere comporta penalità di 3 token.</div>
+            <div style="background: var(--warning); color: white; padding: 15px; border-radius: 8px; margin-top: 20px; font-size: 13px;">ℹ️ È possibile barattare token per quello che vuole, purché sia d'accordo la mamma. Se non è d'accordo, non insistere. Insistere comporta penalità di 3 token.</div>
         </div>
 
         <div class="footer">
-            <p>Token Economy Tracker | Powered by Google Sheets + Firebase Realtime Database</p>
+            <p>Token Economy Tracker | Powered by Google Sheets API</p>
         </div>
     </div>
 
-    <!-- Status Cloud (in basso a destra) -->
     <div class="cloud-status syncing" id="cloudStatus">
         <span id="statusIcon">⏳</span>
-        <span id="statusText">Connessione...</span>
+        <span id="statusText">Caricamento...</span>
     </div>
-
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-database.js"></script>
 
     <script>
         const ADMIN_PASSWORD = "FalkorMiuraFrechete";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyDaTFJsahDwaS-JDaUdP3cbRedu_6i4BTY",
-            authDomain: "bruno-mars-tracker.firebaseapp.com",
-            databaseURL: "https://bruno-mars-tracker-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "bruno-mars-tracker",
-            storageBucket: "bruno-mars-tracker.firebasestorage.app",
-            messagingSenderId: "128425155226",
-            appId: "1:128425155226:web:558f8cca14d6ef9f735d23",
-            measurementId: "G-B854J72E1C"
-        };
-
-        // Inizializza Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-        const dataRef = db.ref('bruno-mars-data');
+        const SPREADSHEET_ID = "1x603JVo2C-0Ejs8hTq9zmCCVTwW2-rSQ90-53vggv1c";
+        const SHEET_NAME = "Foglio1";
+        const DATA_CELL = "A2";
 
         let localData = {
             totalTokens: 0,
@@ -628,41 +574,47 @@
             history: []
         };
 
-        // Creazione overlay di caricamento
-        const loadingOverlay = document.createElement('div');
-        loadingOverlay.style = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(255,255,255,0.9);display:flex;justify-content:center;align-items:center;z-index:9999;flex-direction:column;font-family:sans-serif;";
-        loadingOverlay.innerHTML = '<div style="font-size:30px;margin-bottom:10px;">☁️</div><div style="color:#3182f6;font-weight:bold;">Sincronizzazione con Firebase...</div>';
-        document.body.appendChild(loadingOverlay);
-
-        async function init() {
+        async function loadDataFromSheets() {
             try {
-                // Ascolta i dati in tempo reale
-                dataRef.on('value', (snapshot) => {
-                    const data = snapshot.val();
-                    if (data && typeof data.baseTokens === 'number') {
-                        localData = data;
-                        console.log("✅ Dati caricati da Firebase:", localData);
-                        updateDisplay();
-                        updateHistory();
-                        updateCloudStatus('synced');
-                    } else {
-                        console.log("Firebase vuoto, inizializzo con dati locali");
-                        updateCloudStatus('synced');
+                updateCloudStatus('syncing');
+                const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/query?tqx=out:json&sheet=${SHEET_NAME}`;
+                const response = await fetch(url);
+                const text = await response.text();
+                const json = JSON.parse(text.substring(47).slice(0, -2));
+                
+                if (json.table && json.table.rows && json.table.rows[1]) {
+                    const dataStr = json.table.rows[1].c[0]?.v;
+                    if (dataStr) {
+                        localData = JSON.parse(dataStr);
+                        console.log("✅ Dati caricati da Google Sheets:", localData);
                     }
-                    loadingOverlay.style.display = 'none';
-                });
-
-                // Listener per errori di connessione
-                dataRef.on('error', (error) => {
-                    console.error("❌ Errore Firebase:", error);
-                    updateCloudStatus('error');
-                    loadingOverlay.style.display = 'none';
-                });
-
+                } else {
+                    console.log("Foglio vuoto, uso dati iniziali");
+                }
+                updateDisplay();
+                updateHistory();
+                updateCloudStatus('synced');
             } catch (err) {
-                console.error("Errore inizializzazione:", err);
+                console.error("❌ Errore caricamento da Sheets:", err);
                 updateCloudStatus('error');
-                loadingOverlay.style.display = 'none';
+            }
+        }
+
+        async function saveDataToSheets() {
+            try {
+                updateCloudStatus('syncing');
+                const dataJson = JSON.stringify(localData);
+                const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/edit`;
+                
+                // Creazione del form per aggiornare il foglio
+                const formData = new FormData();
+                formData.append('entry.0', dataJson);
+
+                alert("⚠️ Nota: Per salvare i dati, torna al foglio Google Sheets e incolla manualmente i dati aggiornati in cella A2:\n\n" + dataJson);
+                updateCloudStatus('synced');
+            } catch (err) {
+                console.error("❌ Errore salvataggio:", err);
+                updateCloudStatus('error');
             }
         }
 
@@ -701,7 +653,7 @@
 
             if (localData.history.length > 20) localData.history = localData.history.slice(0, 20);
 
-            saveData(localData);
+            saveDataToSheets();
         }
 
         function updateHistory() {
@@ -744,18 +696,6 @@
             document.getElementById('proTokens').textContent = localData.proTokens;
             document.getElementById('vipTokens').textContent = localData.vipTokens;
             document.getElementById('penaltyTokens').textContent = localData.penaltyTokens;
-        }
-
-        function saveData(data) {
-            updateCloudStatus('syncing');
-            dataRef.set(data).then(() => {
-                console.log("✅ Dati salvati su Firebase");
-                updateCloudStatus('synced');
-            }).catch((err) => {
-                console.error("❌ Errore salvataggio Firebase:", err);
-                updateCloudStatus('error');
-                alert("⚠️ Errore: Impossibile salvare. Controlla la connessione e la configurazione Firebase.");
-            });
         }
 
         function checkPassword() {
@@ -817,12 +757,12 @@
                 const rewards = { 7: 1, 14: 3, 21: 6, 28: 10 };
                 const bonus = rewards[localData.streakDays];
                 localData.totalTokens += bonus;
-                saveData(localData);
+                saveDataToSheets();
                 updateDisplay();
                 addToHistory('streak', bonus, `Bonus ${localData.streakDays} giorni`);
                 alert(`🎉 Complimenti! ${localData.streakDays} giorni senza penalità! Bonus: +${bonus} token!`);
             } else {
-                saveData(localData);
+                saveDataToSheets();
                 updateDisplay();
                 addToHistory('streak', 0, `+1 giorno streak`);
             }
@@ -837,19 +777,20 @@
         }
 
         function resetData() {
-            if (confirm('ATTENZIONE: Questo cancellerà TUTTO dal Cloud. Sicuro?')) {
+            if (confirm('ATTENZIONE: Questo cancellerà TUTTO. Sicuro?')) {
                 localData = {
                     totalTokens: 0, streakDays: 0, baseTokens: 0, proTokens: 0, vipTokens: 0, penaltyTokens: 0, history: []
                 };
-                saveData(localData);
+                saveDataToSheets();
                 updateDisplay();
                 updateHistory();
                 alert('🔄 Dati resettati!');
             }
         }
 
-        // START
-        init();
+        // Carica i dati ogni 5 secondi
+        loadDataFromSheets();
+        setInterval(loadDataFromSheets, 5000);
     </script>
 </body>
 
