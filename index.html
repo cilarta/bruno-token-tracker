@@ -354,21 +354,21 @@
         <header>
             <h1>🎮 Bruno Mars e i suoi guadagni</h1>
             <p>Tu volere KEBAP? Tu volele sushi? Tu volere soldini? Tu bravo, tu ottiene!</p>
-            <div class="token-display">Token Totali: <span id="totalTokens">0</span></div>
+            <div class="token-display">Token Totali: <span id="totalTokens">...</span></div>
         </header>
 
         <div class="status">
-            <div class="status-item"><span>Giorni senza penalità:</span><span id="streakDays">0</span></div>
-            <div class="status-item"><span>Token da azioni base:</span><span id="baseTokens">0</span></div>
-            <div class="status-item"><span>Token da azioni pro:</span><span id="proTokens">0</span></div>
-            <div class="status-item"><span>Token da azioni VIP:</span><span id="vipTokens">0</span></div>
-            <div class="status-item"><span>Token persi da penalità:</span><span id="penaltyTokens">0</span></div>
+            <div class="status-item"><span>Giorni senza penalità:</span><span id="streakDays">...</span></div>
+            <div class="status-item"><span>Token da azioni base:</span><span id="baseTokens">...</span></div>
+            <div class="status-item"><span>Token da azioni pro:</span><span id="proTokens">...</span></div>
+            <div class="status-item"><span>Token da azioni VIP:</span><span id="vipTokens">...</span></div>
+            <div class="status-item"><span>Token persi da penalità:</span><span id="penaltyTokens">...</span></div>
         </div>
 
         <div class="card">
             <h2>📊 Storico Token Ultimi</h2>
             <div class="history-list" id="historyList">
-                <p style="color: var(--gray-700); font-size: 13px;">Nessun movimento ancora...</p>
+                <p style="color: var(--gray-700); font-size: 13px;">Caricamento...</p>
             </div>
         </div>
 
@@ -400,12 +400,12 @@
                 </div>
                 <div class="edit-controls">
                     <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--gray-200);">
-                        <p style="margin-bottom: 10px; font-size: 13px; font-weight: bold;">💾 Backup e Ripristino</p>
-                        <button class="btn-primary" onclick="exportData()" style="background: #6366f1;">� Esporta
-                            Dati</button>
-                        <button class="btn-primary" onclick="importData()" style="background: #8b5cf6;">📥 Importa
-                            Dati</button>
-                        <button class="btn-danger" onclick="resetData()" style="margin-left: 10px;">🔄 Reset</button>
+                        <p style="margin-bottom: 5px; font-size: 13px; font-weight: bold; color: var(--success);">☁️
+                            Cloud Sync Attivo</p>
+                        <p style="margin-bottom: 10px; font-size: 12px; color: var(--gray-700);">I dati si salvano in
+                            automatico online.</p>
+                        <button class="btn-danger" onclick="resetData()" style="font-size: 12px;">🔄 Reset
+                            Totale</button>
                     </div>
                 </div>
             </div>
@@ -431,7 +431,7 @@
                             class="token-badge">1</span></div>
                     <div class="item"><span class="item-name">Andare a letto entro le 22:30</span><span
                             class="token-badge">1</span></div>
-                    <div class="item"><span class="item-name">Preparare lo zaino prima di andare a letto (1 token ogni 2 giorni)</span><span
+                    <div class="item"><span class="item-name">Preparare lo zaino (1 token ogni 2 giorni)</span><span
                             class="token-badge">1</span></div>
                 </div>
             </div>
@@ -563,28 +563,98 @@
     <script>
         const ADMIN_PASSWORD = "FalkorMiuraFrechete";
 
-        function loadData() {
+        // CHIAVE PERSONALE PER CLOUD SYNC
+        const CLOUD_KEY = "bruno-mars-tracker-v124-secret";
+        const API_READ = `https://keyvalue.immanuel.co/api/Key/GetValue/${CLOUD_KEY}`;
+        const API_WRITE = `https://keyvalue.immanuel.co/api/Key/UpdateValue/${CLOUD_KEY}/`;
+
+        let localData = {
+            totalTokens: 0,
+            streakDays: 0,
+            baseTokens: 0,
+            proTokens: 0,
+            vipTokens: 0,
+            penaltyTokens: 0,
+            history: []
+        };
+
+        // Creazione overlay di caricamento
+        const loadingOverlay = document.createElement('div');
+        loadingOverlay.style = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(255,255,255,0.9);display:flex;justify-content:center;align-items:center;z-index:9999;flex-direction:column;font-family:sans-serif;";
+        loadingOverlay.innerHTML = '<div style="font-size:30px;margin-bottom:10px;">☁️</div><div style="color:#3182f6;font-weight:bold;">Sincronizzazione dati...</div>';
+        document.body.appendChild(loadingOverlay);
+
+        async function init() {
+            // Tentativo 1: Carica dal Cloud
+            try {
+                const response = await fetch(API_READ);
+                const text = await response.text();
+
+                if (text && text.length > 5) {
+                    // Pulisce eventuali quote se l'API ritorna stringa JSONata
+                    const cleanText = text.replace(/^"|"$/g, '').replace(/\\"/g, '"');
+                    const data = JSON.parse(cleanText);
+
+                    if (data && typeof data.baseTokens === 'number') {
+                        localData = data;
+                        console.log("Dati scaricati dal cloud:", localData);
+                    }
+                } else {
+                    console.log("Cloud vuoto. Provo a usare dati locali o inizializzo.");
+                    loadFromLocalStorage();
+                }
+            } catch (err) {
+                console.warn("Errore Cloud (offline?):", err);
+                loadFromLocalStorage(); // Fallback se offline
+            }
+
+            updateDisplay();
+            updateHistory();
+            loadingOverlay.style.display = 'none';
+        }
+
+        function loadFromLocalStorage() {
             const saved = localStorage.getItem('tokenEconomy');
             if (saved) {
-                return JSON.parse(saved);
+                localData = JSON.parse(saved);
+                console.log("Dati caricati da locale:", localData);
             }
-            return {
-                totalTokens: 0,
-                streakDays: 0,
-                baseTokens: 0,
-                proTokens: 0,
-                vipTokens: 0,
-                penaltyTokens: 0,
-                history: []
-            };
         }
 
-        function saveData(data) {
-            localStorage.setItem('tokenEconomy', JSON.stringify(data));
+        async function saveData(data) {
+            localData = data;
+
+            // 1. Salva subito in locale (cache veloce/offline)
+            localStorage.setItem('tokenEconomy', JSON.stringify(localData));
+
+            // 2. Salva in Cloud (background)
+            showSavingIndicator(true);
+            try {
+                await fetch(API_WRITE + encodeURIComponent(JSON.stringify(localData)), { method: 'POST' });
+                console.log("Dati caricati su cloud");
+            } catch (err) {
+                console.error("Errore salvataggio cloud", err);
+                alert("⚠️ Attenzione: Impossibile salvare online. Controlla connessione.");
+            }
+            showSavingIndicator(false);
         }
+
+        function showSavingIndicator(show) {
+            let indic = document.getElementById('saveIndicator');
+            if (!indic) {
+                indic = document.createElement('div');
+                indic.id = 'saveIndicator';
+                indic.style = "position:fixed;bottom:20px;right:20px;background:#10b981;color:white;padding:10px 20px;border-radius:20px;box-shadow:0 2px 10px rgba(0,0,0,0.2);display:none;font-size:13px;font-weight:bold;";
+                indic.innerText = "☁️ Salvataggio in corso...";
+                document.body.appendChild(indic);
+            }
+            indic.style.display = show ? 'block' : 'none';
+        }
+
+        // --- FUNZIONI LOGICHE (Adattate per usare localData) ---
 
         function addToHistory(type, amount, description) {
-            const data = loadData();
+            const data = localData;
             if (!data.history) data.history = [];
 
             const now = new Date();
@@ -598,18 +668,16 @@
                 date: now.toLocaleDateString('it-IT')
             });
 
-            if (data.history.length > 20) {
-                data.history = data.history.slice(0, 20);
-            }
+            if (data.history.length > 20) data.history = data.history.slice(0, 20);
 
-            saveData(data);
+            saveData(data); // Salva e Sync
+            updateDisplay();
             updateHistory();
         }
 
         function updateHistory() {
-            const data = loadData();
+            const data = localData;
             const historyList = document.getElementById('historyList');
-
             if (!data.history || data.history.length === 0) {
                 historyList.innerHTML = '<p style="color: var(--gray-700); font-size: 13px;">Nessun movimento ancora...</p>';
                 return;
@@ -619,20 +687,10 @@
             data.history.forEach(item => {
                 let typeClass = 'type-base';
                 let typeEmoji = '📌';
-
-                if (item.type === 'pro') {
-                    typeClass = 'type-pro';
-                    typeEmoji = '⭐';
-                } else if (item.type === 'vip') {
-                    typeClass = 'type-vip';
-                    typeEmoji = '🏆';
-                } else if (item.type === 'penalty') {
-                    typeClass = 'type-penalty';
-                    typeEmoji = '⚠️';
-                } else if (item.type === 'streak') {
-                    typeClass = 'type-streak';
-                    typeEmoji = '🎉';
-                }
+                if (item.type === 'pro') { typeClass = 'type-pro'; typeEmoji = '⭐'; }
+                else if (item.type === 'vip') { typeClass = 'type-vip'; typeEmoji = '🏆'; }
+                else if (item.type === 'penalty') { typeClass = 'type-penalty'; typeEmoji = '⚠️'; }
+                else if (item.type === 'streak') { typeClass = 'type-streak'; typeEmoji = '🎉'; }
 
                 const sign = item.amount > 0 ? '+' : '';
                 const color = item.amount > 0 ? 'var(--success)' : 'var(--danger)';
@@ -646,15 +704,13 @@
                         <div style="text-align: right;">
                             <div style="color: ${color}; font-weight: bold;">${sign}${item.amount}</div>
                         </div>
-                    </div>
-                `;
+                    </div>`;
             });
-
             historyList.innerHTML = html;
         }
 
         function updateDisplay() {
-            const data = loadData();
+            const data = localData;
             document.getElementById('totalTokens').textContent = data.totalTokens;
             document.getElementById('streakDays').textContent = data.streakDays;
             document.getElementById('baseTokens').textContent = data.baseTokens;
@@ -669,7 +725,7 @@
                 document.getElementById('editContent').style.display = 'block';
                 document.getElementById('adminPassword').style.display = 'none';
                 document.querySelector('button[onclick="checkPassword()"]').style.display = 'none';
-                alert('🔓 Accesso sbloccato! Puoi ora modificare i token.');
+                alert('🔓 Accesso sbloccato!');
             } else if (password === '') {
                 alert('⚠️ Inserisci la password');
             } else {
@@ -681,17 +737,12 @@
         function addTokenTyped() {
             const amount = parseInt(document.getElementById('tokenAmount').value) || 1;
             const type = document.getElementById('tokenType').value;
-            const data = loadData();
+            const data = localData;
 
             data.totalTokens += amount;
-
-            if (type === 'base') {
-                data.baseTokens += amount;
-            } else if (type === 'pro') {
-                data.proTokens += amount;
-            } else if (type === 'vip') {
-                data.vipTokens += amount;
-            }
+            if (type === 'base') data.baseTokens += amount;
+            else if (type === 'pro') data.proTokens += amount;
+            else if (type === 'vip') data.vipTokens += amount;
 
             saveData(data);
             updateDisplay();
@@ -702,17 +753,12 @@
         function removeTokenTyped() {
             const amount = parseInt(document.getElementById('tokenAmount').value) || 1;
             const type = document.getElementById('tokenType').value;
-            const data = loadData();
+            const data = localData;
 
             data.totalTokens = Math.max(0, data.totalTokens - amount);
-
-            if (type === 'base') {
-                data.baseTokens = Math.max(0, data.baseTokens - amount);
-            } else if (type === 'pro') {
-                data.proTokens = Math.max(0, data.proTokens - amount);
-            } else if (type === 'vip') {
-                data.vipTokens = Math.max(0, data.vipTokens - amount);
-            }
+            if (type === 'base') data.baseTokens = Math.max(0, data.baseTokens - amount);
+            else if (type === 'pro') data.proTokens = Math.max(0, data.proTokens - amount);
+            else if (type === 'vip') data.vipTokens = Math.max(0, data.vipTokens - amount);
 
             saveData(data);
             updateDisplay();
@@ -722,7 +768,7 @@
 
         function addPenalty() {
             const amount = parseInt(document.getElementById('penaltyAmount').value) || 1;
-            const data = loadData();
+            const data = localData;
             data.totalTokens = Math.max(0, data.totalTokens - amount);
             data.penaltyTokens += amount;
             data.streakDays = 0;
@@ -733,17 +779,16 @@
         }
 
         function addStreakDay() {
-            const data = loadData();
+            const data = localData;
             data.streakDays += 1;
-
-            if (data.streakDays === 7 || data.streakDays === 14 || data.streakDays === 21 || data.streakDays === 28) {
+            if ([7, 14, 21, 28].includes(data.streakDays)) {
                 const rewards = { 7: 1, 14: 3, 21: 6, 28: 10 };
                 const bonus = rewards[data.streakDays];
                 data.totalTokens += bonus;
                 saveData(data);
                 updateDisplay();
                 addToHistory('streak', bonus, `Bonus ${data.streakDays} giorni`);
-                alert(`🎉 Complimenti! Hai raggiunto ${data.streakDays} giorni senza penalità! Bonus: +${bonus} token!`);
+                alert(`🎉 Complimenti! ${data.streakDays} giorni senza penalità! Bonus: +${bonus} token!`);
             } else {
                 saveData(data);
                 updateDisplay();
@@ -753,65 +798,28 @@
 
         function setStreakDays() {
             const days = parseInt(document.getElementById('streakInput').value) || 1;
-            const data = loadData();
+            const data = localData;
             data.streakDays = days;
-
-            if (days === 7 || days === 14 || days === 21 || days === 28) {
-                const rewards = { 7: 1, 14: 3, 21: 6, 28: 10 };
-                const bonus = rewards[days];
-                data.totalTokens += bonus;
-                saveData(data);
-                updateDisplay();
-                addToHistory('streak', bonus, `Bonus ${days} giorni`);
-                alert(`🎉 Hai raggiunto ${days} giorni senza penalità! Bonus: +${bonus} token!`);
-            } else {
-                saveData(data);
-                updateDisplay();
-                addToHistory('streak', 0, `Impostati ${days} giorni`);
-                alert(`✅ Impostati ${days} giorni senza penalità!`);
-            }
+            saveData(data);
+            updateDisplay();
+            addToHistory('streak', 0, `Impostati ${days} giorni`);
+            alert(`✅ Impostati ${days} giorni!`);
         }
 
         function resetData() {
-            if (confirm('Sei sicuro di voler resettare tutti i dati? Questa azione non può essere annullata.')) {
-                localStorage.removeItem('tokenEconomy');
+            if (confirm('ATTENZIONE: Questo cancellerà TUTTO anche dal Cloud. Sicuro?')) {
+                localData = {
+                    totalTokens: 0, streakDays: 0, baseTokens: 0, proTokens: 0, vipTokens: 0, penaltyTokens: 0, history: []
+                };
+                saveData(localData);
                 updateDisplay();
                 updateHistory();
-                alert('🔄 Dati resettati!');
+                alert('🔄 Dati resettati ovunque!');
             }
         }
 
-        function exportData() {
-            const data = loadData();
-            const dataStr = JSON.stringify(data);
-            navigator.clipboard.writeText(dataStr).then(() => {
-                alert('✅ Dati copiati negli appunti!\n\nInvia questo testo al tuo altro dispositivo (mail, whatsapp, telegram...) e usa "Importa Dati" sull\'altro dispositivo.');
-            }).catch(err => {
-                prompt("Copia questo testo manualmente:", dataStr);
-            });
-        }
-
-        function importData() {
-            const input = prompt("Incolla qui i dati esportati dall'altro dispositivo:");
-            if (input) {
-                try {
-                    const data = JSON.parse(input);
-                    if (data && typeof data.totalTokens === 'number') {
-                        saveData(data);
-                        updateDisplay();
-                        updateHistory();
-                        alert('✅ Dati importati con successo!');
-                    } else {
-                        alert('❌ I dati incollati non sembrano validi.');
-                    }
-                } catch (e) {
-                    alert('❌ Errore nella lettura dei dati. Assicurati di aver copiato tutto il testo.');
-                }
-            }
-        }
-
-        updateDisplay();
-        updateHistory();
+        // --- START ---
+        init();
     </script>
 </body>
 
