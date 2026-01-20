@@ -7,7 +7,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>Token Economy Tracker v124</title>
+    <title>Token Economy Tracker v125 Firebase</title>
     <style>
         :root {
             --primary: #3182f6;
@@ -337,6 +337,35 @@
             color: var(--primary);
         }
 
+        .cloud-status {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            border-radius: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            font-size: 13px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .cloud-status.synced {
+            background: var(--success);
+            color: white;
+        }
+
+        .cloud-status.syncing {
+            background: var(--warning);
+            color: white;
+        }
+
+        .cloud-status.error {
+            background: var(--danger);
+            color: white;
+        }
+
         @media (max-width: 768px) {
             .grid {
                 grid-template-columns: 1fr;
@@ -401,9 +430,9 @@
                 <div class="edit-controls">
                     <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--gray-200);">
                         <p style="margin-bottom: 5px; font-size: 13px; font-weight: bold; color: var(--success);">☁️
-                            Cloud Sync Attivo</p>
-                        <p style="margin-bottom: 10px; font-size: 12px; color: var(--gray-700);">I dati si salvano in
-                            automatico online.</p>
+                            Firebase Sync Attivo</p>
+                        <p style="margin-bottom: 10px; font-size: 12px; color: var(--gray-700);">I dati si sincronizzano
+                            in tempo reale.</p>
                         <button class="btn-danger" onclick="resetData()" style="font-size: 12px;">🔄 Reset
                             Totale</button>
                     </div>
@@ -556,17 +585,38 @@
         </div>
 
         <div class="footer">
-            <p>Token Economy Tracker | Sistema di gestione comportamenti positivi</p>
+            <p>Token Economy Tracker | Powered by Firebase Realtime Database</p>
         </div>
     </div>
+
+    <!-- Status Cloud (in basso a destra) -->
+    <div class="cloud-status syncing" id="cloudStatus">
+        <span id="statusIcon">⏳</span>
+        <span id="statusText">Connessione...</span>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.0.0/firebase-database.js"></script>
 
     <script>
         const ADMIN_PASSWORD = "FalkorMiuraFrechete";
 
-        // CHIAVE PERSONALE PER CLOUD SYNC
-        const CLOUD_KEY = "bruno-mars-tracker-v124-secret";
-        const API_READ = `https://keyvalue.immanuel.co/api/Key/GetValue/${CLOUD_KEY}`;
-        const API_WRITE = `https://keyvalue.immanuel.co/api/Key/UpdateValue/${CLOUD_KEY}/`;
+        // ⚠️ SOSTITUISCI CON I TUOI DATI FIREBASE ⚠️
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY_HERE",
+            authDomain: "bruno-mars-tracker.firebaseapp.com",
+            databaseURL: "https://bruno-mars-tracker-xxxxx.firebaseio.com",
+            projectId: "bruno-mars-tracker",
+            storageBucket: "bruno-mars-tracker.appspot.com",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Inizializza Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const dataRef = db.ref('bruno-mars-data');
 
         let localData = {
             totalTokens: 0,
@@ -581,86 +631,67 @@
         // Creazione overlay di caricamento
         const loadingOverlay = document.createElement('div');
         loadingOverlay.style = "position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(255,255,255,0.9);display:flex;justify-content:center;align-items:center;z-index:9999;flex-direction:column;font-family:sans-serif;";
-        loadingOverlay.innerHTML = '<div style="font-size:30px;margin-bottom:10px;">☁️</div><div style="color:#3182f6;font-weight:bold;">Sincronizzazione dati...</div>';
+        loadingOverlay.innerHTML = '<div style="font-size:30px;margin-bottom:10px;">☁️</div><div style="color:#3182f6;font-weight:bold;">Sincronizzazione con Firebase...</div>';
         document.body.appendChild(loadingOverlay);
 
         async function init() {
-            // Tentativo 1: Carica dal Cloud
             try {
-                const response = await fetch(API_READ);
-                const text = await response.text();
-
-                if (text && text.length > 5) {
-                    // Pulisce eventuali quote se l'API ritorna stringa JSONata
-                    const cleanText = text.replace(/^"|"$/g, '').replace(/\\"/g, '"');
-                    const data = JSON.parse(cleanText);
-
+                // Ascolta i dati in tempo reale
+                dataRef.on('value', (snapshot) => {
+                    const data = snapshot.val();
                     if (data && typeof data.baseTokens === 'number') {
                         localData = data;
-                        console.log("Dati scaricati dal cloud:", localData);
+                        console.log("✅ Dati caricati da Firebase:", localData);
+                        updateDisplay();
+                        updateHistory();
+                        updateCloudStatus('synced');
+                    } else {
+                        console.log("Firebase vuoto, inizializzo con dati locali");
+                        updateCloudStatus('synced');
                     }
-                } else {
-                    console.log("Cloud vuoto. Provo a usare dati locali o inizializzo.");
-                    loadFromLocalStorage();
-                }
+                    loadingOverlay.style.display = 'none';
+                });
+
+                // Listener per errori di connessione
+                dataRef.on('error', (error) => {
+                    console.error("❌ Errore Firebase:", error);
+                    updateCloudStatus('error');
+                    loadingOverlay.style.display = 'none';
+                });
+
             } catch (err) {
-                console.warn("Errore Cloud (offline?):", err);
-                loadFromLocalStorage(); // Fallback se offline
-            }
-
-            updateDisplay();
-            updateHistory();
-            loadingOverlay.style.display = 'none';
-        }
-
-        function loadFromLocalStorage() {
-            const saved = localStorage.getItem('tokenEconomy');
-            if (saved) {
-                localData = JSON.parse(saved);
-                console.log("Dati caricati da locale:", localData);
+                console.error("Errore inizializzazione:", err);
+                updateCloudStatus('error');
+                loadingOverlay.style.display = 'none';
             }
         }
 
-        async function saveData(data) {
-            localData = data;
+        function updateCloudStatus(status) {
+            const statusEl = document.getElementById('cloudStatus');
+            const icon = document.getElementById('statusIcon');
+            const text = document.getElementById('statusText');
 
-            // 1. Salva subito in locale (cache veloce/offline)
-            localStorage.setItem('tokenEconomy', JSON.stringify(localData));
+            statusEl.className = 'cloud-status ' + status;
 
-            // 2. Salva in Cloud (background)
-            showSavingIndicator(true);
-            try {
-                await fetch(API_WRITE + encodeURIComponent(JSON.stringify(localData)), { method: 'POST' });
-                console.log("Dati caricati su cloud");
-            } catch (err) {
-                console.error("Errore salvataggio cloud", err);
-                alert("⚠️ Attenzione: Impossibile salvare online. Controlla connessione.");
+            if (status === 'syncing') {
+                icon.textContent = '⏳';
+                text.textContent = 'Sincronizzazione...';
+            } else if (status === 'synced') {
+                icon.textContent = '✅';
+                text.textContent = 'Sincronizzato';
+            } else if (status === 'error') {
+                icon.textContent = '❌';
+                text.textContent = 'Errore connessione';
             }
-            showSavingIndicator(false);
         }
-
-        function showSavingIndicator(show) {
-            let indic = document.getElementById('saveIndicator');
-            if (!indic) {
-                indic = document.createElement('div');
-                indic.id = 'saveIndicator';
-                indic.style = "position:fixed;bottom:20px;right:20px;background:#10b981;color:white;padding:10px 20px;border-radius:20px;box-shadow:0 2px 10px rgba(0,0,0,0.2);display:none;font-size:13px;font-weight:bold;";
-                indic.innerText = "☁️ Salvataggio in corso...";
-                document.body.appendChild(indic);
-            }
-            indic.style.display = show ? 'block' : 'none';
-        }
-
-        // --- FUNZIONI LOGICHE (Adattate per usare localData) ---
 
         function addToHistory(type, amount, description) {
-            const data = localData;
-            if (!data.history) data.history = [];
+            if (!localData.history) localData.history = [];
 
             const now = new Date();
             const timeStr = now.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
 
-            data.history.unshift({
+            localData.history.unshift({
                 type: type,
                 amount: amount,
                 description: description,
@@ -668,23 +699,20 @@
                 date: now.toLocaleDateString('it-IT')
             });
 
-            if (data.history.length > 20) data.history = data.history.slice(0, 20);
+            if (localData.history.length > 20) localData.history = localData.history.slice(0, 20);
 
-            saveData(data); // Salva e Sync
-            updateDisplay();
-            updateHistory();
+            saveData(localData);
         }
 
         function updateHistory() {
-            const data = localData;
             const historyList = document.getElementById('historyList');
-            if (!data.history || data.history.length === 0) {
+            if (!localData.history || localData.history.length === 0) {
                 historyList.innerHTML = '<p style="color: var(--gray-700); font-size: 13px;">Nessun movimento ancora...</p>';
                 return;
             }
 
             let html = '';
-            data.history.forEach(item => {
+            localData.history.forEach(item => {
                 let typeClass = 'type-base';
                 let typeEmoji = '📌';
                 if (item.type === 'pro') { typeClass = 'type-pro'; typeEmoji = '⭐'; }
@@ -710,13 +738,24 @@
         }
 
         function updateDisplay() {
-            const data = localData;
-            document.getElementById('totalTokens').textContent = data.totalTokens;
-            document.getElementById('streakDays').textContent = data.streakDays;
-            document.getElementById('baseTokens').textContent = data.baseTokens;
-            document.getElementById('proTokens').textContent = data.proTokens;
-            document.getElementById('vipTokens').textContent = data.vipTokens;
-            document.getElementById('penaltyTokens').textContent = data.penaltyTokens;
+            document.getElementById('totalTokens').textContent = localData.totalTokens;
+            document.getElementById('streakDays').textContent = localData.streakDays;
+            document.getElementById('baseTokens').textContent = localData.baseTokens;
+            document.getElementById('proTokens').textContent = localData.proTokens;
+            document.getElementById('vipTokens').textContent = localData.vipTokens;
+            document.getElementById('penaltyTokens').textContent = localData.penaltyTokens;
+        }
+
+        function saveData(data) {
+            updateCloudStatus('syncing');
+            dataRef.set(data).then(() => {
+                console.log("✅ Dati salvati su Firebase");
+                updateCloudStatus('synced');
+            }).catch((err) => {
+                console.error("❌ Errore salvataggio Firebase:", err);
+                updateCloudStatus('error');
+                alert("⚠️ Errore: Impossibile salvare. Controlla la connessione e la configurazione Firebase.");
+            });
         }
 
         function checkPassword() {
@@ -737,60 +776,53 @@
         function addTokenTyped() {
             const amount = parseInt(document.getElementById('tokenAmount').value) || 1;
             const type = document.getElementById('tokenType').value;
-            const data = localData;
 
-            data.totalTokens += amount;
-            if (type === 'base') data.baseTokens += amount;
-            else if (type === 'pro') data.proTokens += amount;
-            else if (type === 'vip') data.vipTokens += amount;
+            localData.totalTokens += amount;
+            if (type === 'base') localData.baseTokens += amount;
+            else if (type === 'pro') localData.proTokens += amount;
+            else if (type === 'vip') localData.vipTokens += amount;
 
-            saveData(data);
-            updateDisplay();
             addToHistory(type, amount, `Aggiunti ${amount} token ${type}`);
+            updateDisplay();
             alert(`✅ Aggiunti ${amount} token ${type.toUpperCase()}!`);
         }
 
         function removeTokenTyped() {
             const amount = parseInt(document.getElementById('tokenAmount').value) || 1;
             const type = document.getElementById('tokenType').value;
-            const data = localData;
 
-            data.totalTokens = Math.max(0, data.totalTokens - amount);
-            if (type === 'base') data.baseTokens = Math.max(0, data.baseTokens - amount);
-            else if (type === 'pro') data.proTokens = Math.max(0, data.proTokens - amount);
-            else if (type === 'vip') data.vipTokens = Math.max(0, data.vipTokens - amount);
+            localData.totalTokens = Math.max(0, localData.totalTokens - amount);
+            if (type === 'base') localData.baseTokens = Math.max(0, localData.baseTokens - amount);
+            else if (type === 'pro') localData.proTokens = Math.max(0, localData.proTokens - amount);
+            else if (type === 'vip') localData.vipTokens = Math.max(0, localData.vipTokens - amount);
 
-            saveData(data);
-            updateDisplay();
             addToHistory(type, -amount, `Rimossi ${amount} token ${type}`);
+            updateDisplay();
             alert(`❌ Rimossi ${amount} token ${type.toUpperCase()}!`);
         }
 
         function addPenalty() {
             const amount = parseInt(document.getElementById('penaltyAmount').value) || 1;
-            const data = localData;
-            data.totalTokens = Math.max(0, data.totalTokens - amount);
-            data.penaltyTokens += amount;
-            data.streakDays = 0;
-            saveData(data);
-            updateDisplay();
+            localData.totalTokens = Math.max(0, localData.totalTokens - amount);
+            localData.penaltyTokens += amount;
+            localData.streakDays = 0;
             addToHistory('penalty', -amount, `Penalità applicata`);
+            updateDisplay();
             alert(`⚠️ Applicata penalità di ${amount} token! Streak resettato.`);
         }
 
         function addStreakDay() {
-            const data = localData;
-            data.streakDays += 1;
-            if ([7, 14, 21, 28].includes(data.streakDays)) {
+            localData.streakDays += 1;
+            if ([7, 14, 21, 28].includes(localData.streakDays)) {
                 const rewards = { 7: 1, 14: 3, 21: 6, 28: 10 };
-                const bonus = rewards[data.streakDays];
-                data.totalTokens += bonus;
-                saveData(data);
+                const bonus = rewards[localData.streakDays];
+                localData.totalTokens += bonus;
+                saveData(localData);
                 updateDisplay();
-                addToHistory('streak', bonus, `Bonus ${data.streakDays} giorni`);
-                alert(`🎉 Complimenti! ${data.streakDays} giorni senza penalità! Bonus: +${bonus} token!`);
+                addToHistory('streak', bonus, `Bonus ${localData.streakDays} giorni`);
+                alert(`🎉 Complimenti! ${localData.streakDays} giorni senza penalità! Bonus: +${bonus} token!`);
             } else {
-                saveData(data);
+                saveData(localData);
                 updateDisplay();
                 addToHistory('streak', 0, `+1 giorno streak`);
             }
@@ -798,27 +830,25 @@
 
         function setStreakDays() {
             const days = parseInt(document.getElementById('streakInput').value) || 1;
-            const data = localData;
-            data.streakDays = days;
-            saveData(data);
-            updateDisplay();
+            localData.streakDays = days;
             addToHistory('streak', 0, `Impostati ${days} giorni`);
+            updateDisplay();
             alert(`✅ Impostati ${days} giorni!`);
         }
 
         function resetData() {
-            if (confirm('ATTENZIONE: Questo cancellerà TUTTO anche dal Cloud. Sicuro?')) {
+            if (confirm('ATTENZIONE: Questo cancellerà TUTTO dal Cloud. Sicuro?')) {
                 localData = {
                     totalTokens: 0, streakDays: 0, baseTokens: 0, proTokens: 0, vipTokens: 0, penaltyTokens: 0, history: []
                 };
                 saveData(localData);
                 updateDisplay();
                 updateHistory();
-                alert('🔄 Dati resettati ovunque!');
+                alert('🔄 Dati resettati!');
             }
         }
 
-        // --- START ---
+        // START
         init();
     </script>
 </body>
