@@ -7,8 +7,8 @@
     <style>
         :root {
             --primary: #3182f6; --primary-dark: #2563eb; --success: #10b981;
-            --danger: #ef4444; --warning: #f59e0b; --gray-100: #f3f4f6;
-            --gray-200: #e5e7eb; --gray-700: #374151; --gray-900: #111827;
+            --danger: #ef4444; --danger-dark: #b91c1c; --warning: #f59e0b; 
+            --gray-100: #f3f4f6; --gray-200: #e5e7eb; --gray-700: #374151; --gray-900: #111827;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--gray-100); color: var(--gray-900); padding: 20px; }
@@ -19,6 +19,8 @@
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px; }
         .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         .card h2 { font-size: 18px; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid var(--gray-200); }
+        
+        /* Stili liste positive */
         .base-color { border-left: 4px solid var(--success); }
         .pro-color { border-left: 4px solid var(--warning); }
         .vip-color { border-left: 4px solid var(--danger); }
@@ -26,10 +28,69 @@
         .item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--gray-100); border-radius: 8px; font-size: 14px; }
         .item-name { flex: 1; }
         .token-badge { background: var(--primary); color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 12px; }
-        .penalties { background: var(--gray-100); padding: 15px; border-radius: 8px; margin-top: 15px; }
-        .penalty-item { font-size: 13px; margin: 8px 0; display: flex; justify-content: space-between; }
-        .penalty-name { flex: 1; }
-        .penalty-value { color: var(--danger); font-weight: bold; }
+
+        /* NUOVI STILI PENALITÀ SCHEMATIZZATI */
+        .penalty-container {
+            border-top: 4px solid var(--danger);
+        }
+        .penalties-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 15px;
+            margin-top: 10px;
+        }
+        .penalty-card {
+            background-color: #fef2f2; /* Rosso chiarissimo */
+            border: 2px solid #fecaca;
+            border-radius: 12px;
+            padding: 15px 10px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            height: 100%;
+            transition: all 0.2s ease;
+        }
+        .penalty-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 10px rgba(239, 68, 68, 0.2);
+            border-color: var(--danger);
+        }
+        .penalty-icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+        .penalty-desc {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+        .penalty-value {
+            background: white;
+            color: var(--danger);
+            border: 1px solid var(--danger);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 800;
+            font-size: 14px;
+        }
+        /* Stile speciale per penalità gravi */
+        .penalty-severe {
+            background-color: #fee2e2;
+            border: 2px solid #ef4444;
+        }
+        .penalty-severe .penalty-value {
+            background: var(--danger);
+            color: white;
+        }
+        .penalty-severe .penalty-desc {
+            color: var(--danger-dark);
+        }
+
+        /* Altri stili */
         .section-title { background: var(--primary); color: white; padding: 15px; border-radius: 8px; margin: 20px 0 15px; font-size: 16px; font-weight: bold; }
         .premi-item { background: var(--gray-100); padding: 15px; border-radius: 8px; margin-bottom: 12px; }
         .premi-header { font-weight: bold; color: var(--primary); margin-bottom: 8px; }
@@ -119,7 +180,7 @@
 
         <div class="grid">
             <div class="card base-color">
-                               <h2>✅ Livello Base (1 token)</h2>
+                <h2>✅ Livello Base (1 token)</h2>
                 <div class="item-list">
                     <div class="item"><span class="item-name">Completare compiti scolastici</span><span class="token-badge">1</span></div>
                     <div class="item"><span class="item-name">Riordinare quando chiesto da mamma</span><span class="token-badge">1</span></div>
@@ -151,16 +212,39 @@
             </div>
         </div>
 
-
-        <div class="card">
+        <div class="card penalty-container">
             <h2>⚠️ Penalità</h2>
-            <div class="penalties">
-                <div class="penalty-item"><span class="penalty-name">Telefono oltre limite</span><span class="penalty-value">-2</span></div>
-                <div class="penalty-item"><span class="penalty-name">Lamentarsi durante i pasti</span><span class="penalty-value">-1</span></div>
-                <div class="penalty-item"><span class="penalty-name">Non completare compiti</span><span class="penalty-value">-2</span></div>
-                <div class="penalty-item"><span class="penalty-name">Non mantenere promesse</span><span class="penalty-value">-15</span></div>
-                <div class="penalty-item"><span class="penalty-name">Fare i capricci</span><span class="penalty-value">-1</span></div>
-                <div class="penalty-item"><span class="penalty-name">Voto negativo a scuola</span><span class="penalty-value">-50</span></div>
+            <div class="penalties-grid">
+                <div class="penalty-card">
+                    <div class="penalty-icon">📱</div>
+                    <div class="penalty-desc">Telefono oltre limite</div>
+                    <div class="penalty-value">-2</div>
+                </div>
+                <div class="penalty-card">
+                    <div class="penalty-icon">🍽️</div>
+                    <div class="penalty-desc">Lamenti ai pasti</div>
+                    <div class="penalty-value">-1</div>
+                </div>
+                <div class="penalty-card">
+                    <div class="penalty-icon">📚</div>
+                    <div class="penalty-desc">Niente compiti</div>
+                    <div class="penalty-value">-2</div>
+                </div>
+                <div class="penalty-card">
+                    <div class="penalty-icon">😭</div>
+                    <div class="penalty-desc">Capricci</div>
+                    <div class="penalty-value">-1</div>
+                </div>
+                <div class="penalty-card penalty-severe">
+                    <div class="penalty-icon">🤥</div>
+                    <div class="penalty-desc">Promessa non mantenuta</div>
+                    <div class="penalty-value">-15</div>
+                </div>
+                <div class="penalty-card penalty-severe">
+                    <div class="penalty-icon">📉</div>
+                    <div class="penalty-desc">Voto Negativo</div>
+                    <div class="penalty-value">-50</div>
+                </div>
             </div>
         </div>
 
