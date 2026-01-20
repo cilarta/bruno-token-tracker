@@ -399,7 +399,14 @@
                     <button class="btn-primary" onclick="addStreakDay()">+ 1 Giorno Senza Penalità</button>
                 </div>
                 <div class="edit-controls">
-                    <button class="btn-danger" onclick="resetData()">🔄 Ripristina Tutto</button>
+                    <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--gray-200);">
+                        <p style="margin-bottom: 10px; font-size: 13px; font-weight: bold;">💾 Backup e Ripristino</p>
+                        <button class="btn-primary" onclick="exportData()" style="background: #6366f1;">� Esporta
+                            Dati</button>
+                        <button class="btn-primary" onclick="importData()" style="background: #8b5cf6;">📥 Importa
+                            Dati</button>
+                        <button class="btn-danger" onclick="resetData()" style="margin-left: 10px;">🔄 Reset</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -771,6 +778,35 @@
                 updateDisplay();
                 updateHistory();
                 alert('🔄 Dati resettati!');
+            }
+        }
+
+        function exportData() {
+            const data = loadData();
+            const dataStr = JSON.stringify(data);
+            navigator.clipboard.writeText(dataStr).then(() => {
+                alert('✅ Dati copiati negli appunti!\n\nInvia questo testo al tuo altro dispositivo (mail, whatsapp, telegram...) e usa "Importa Dati" sull\'altro dispositivo.');
+            }).catch(err => {
+                prompt("Copia questo testo manualmente:", dataStr);
+            });
+        }
+
+        function importData() {
+            const input = prompt("Incolla qui i dati esportati dall'altro dispositivo:");
+            if (input) {
+                try {
+                    const data = JSON.parse(input);
+                    if (data && typeof data.totalTokens === 'number') {
+                        saveData(data);
+                        updateDisplay();
+                        updateHistory();
+                        alert('✅ Dati importati con successo!');
+                    } else {
+                        alert('❌ I dati incollati non sembrano validi.');
+                    }
+                } catch (e) {
+                    alert('❌ Errore nella lettura dei dati. Assicurati di aver copiato tutto il testo.');
+                }
             }
         }
 
