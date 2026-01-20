@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="it">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,56 +20,335 @@
             --gray-700: #374151;
             --gray-900: #111827;
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--gray-100); color: var(--gray-900); padding: 20px; }
-        .container { max-width: 1200px; margin: 0 auto; }
-        header { background: white; padding: 20px; border-radius: 10px; margin-bottom: 30px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        h1 { font-size: 28px; margin-bottom: 10px; }
-        .token-display { font-size: 24px; color: var(--primary); font-weight: bold; margin: 15px 0; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .card h2 { font-size: 18px; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid var(--gray-200); }
-        .base-color { border-left: 4px solid var(--success); }
-        .pro-color { border-left: 4px solid var(--warning); }
-        .vip-color { border-left: 4px solid var(--danger); }
-        .item-list { display: flex; flex-direction: column; gap: 10px; }
-        .item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--gray-100); border-radius: 8px; font-size: 14px; }
-        .item-name { flex: 1; }
-        .token-badge { background: var(--primary); color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 12px; }
-        .penalties { background: var(--gray-100); padding: 15px; border-radius: 8px; margin-top: 15px; }
-        .penalty-item { font-size: 13px; margin: 8px 0; display: flex; justify-content: space-between; }
-        .penalty-name { flex: 1; }
-        .penalty-value { color: var(--danger); font-weight: bold; }
-        .section-title { background: var(--primary); color: white; padding: 15px; border-radius: 8px; margin: 20px 0 15px; font-size: 16px; font-weight: bold; }
-        .premi-item { background: var(--gray-100); padding: 15px; border-radius: 8px; margin-bottom: 12px; }
-        .premi-header { font-weight: bold; color: var(--primary); margin-bottom: 8px; }
-        .premi-option { font-size: 13px; margin: 5px 0 5px 20px; }
-        .footer { background: white; padding: 20px; border-radius: 10px; text-align: center; font-size: 13px; color: var(--gray-700); margin-top: 30px; }
-        .edit-section { background: var(--gray-100); padding: 20px; border-radius: 10px; margin: 30px 0; }
-        .edit-controls { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
-        input[type="password"], input[type="number"], input[type="text"], select { padding: 8px 12px; border: 1px solid var(--gray-200); border-radius: 6px; font-size: 14px; }
-        button { padding: 10px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:hover { background: var(--primary-dark); }
-        .btn-success { background: var(--success); color: white; }
-        .btn-success:hover { background: #059669; }
-        .btn-danger { background: var(--danger); color: white; }
-        .btn-danger:hover { background: #dc2626; }
-        .status { background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
-        .status-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--gray-200); }
-        .status-item:last-child { border-bottom: none; }
-        .history-list { max-height: 300px; overflow-y: auto; }
-        .history-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: var(--gray-100); border-radius: 6px; margin-bottom: 8px; font-size: 13px; }
-        .history-type { padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 11px; }
-        .type-base { background: var(--success); color: white; }
-        .type-pro { background: var(--warning); color: white; }
-        .type-vip { background: var(--danger); color: white; }
-        .type-penalty { background: #6b7280; color: white; }
-        .type-streak { background: #8b5cf6; color: white; }
-        .history-value { font-weight: bold; color: var(--primary); }
-        @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } h1 { font-size: 22px; } }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--gray-100);
+            color: var(--gray-900);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .token-display {
+            font-size: 24px;
+            color: var(--primary);
+            font-weight: bold;
+            margin: 15px 0;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h2 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--gray-200);
+        }
+
+        .base-color {
+            border-left: 4px solid var(--success);
+        }
+
+        .pro-color {
+            border-left: 4px solid var(--warning);
+        }
+
+        .vip-color {
+            border-left: 4px solid var(--danger);
+        }
+
+        .item-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: var(--gray-100);
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .item-name {
+            flex: 1;
+        }
+
+        .token-badge {
+            background: var(--primary);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .penalties-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1px;
+            background: var(--gray-200);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-top: 15px;
+            border: 1px solid var(--gray-200);
+        }
+
+        .penalty-header {
+            display: flex;
+            justify-content: space-between;
+            background: var(--gray-100);
+            padding: 12px 15px;
+            font-weight: bold;
+            color: var(--gray-700);
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .penalty-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 12px 15px;
+            font-size: 14px;
+        }
+
+        .penalty-row:hover {
+            background: #fef2f2;
+        }
+
+        .penalty-badge {
+            background: #fee2e2;
+            color: var(--danger);
+            font-weight: bold;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 13px;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .section-title {
+            background: var(--primary);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0 15px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .premi-item {
+            background: var(--gray-100);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .premi-header {
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .premi-option {
+            font-size: 13px;
+            margin: 5px 0 5px 20px;
+        }
+
+        .footer {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 13px;
+            color: var(--gray-700);
+            margin-top: 30px;
+        }
+
+        .edit-section {
+            background: var(--gray-100);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 30px 0;
+        }
+
+        .edit-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        input[type="password"],
+        input[type="number"],
+        input[type="text"],
+        select {
+            padding: 8px 12px;
+            border: 1px solid var(--gray-200);
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        button {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .status {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .status-item:last-child {
+            border-bottom: none;
+        }
+
+        .history-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background: var(--gray-100);
+            border-radius: 6px;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        .history-type {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 11px;
+        }
+
+        .type-base {
+            background: var(--success);
+            color: white;
+        }
+
+        .type-pro {
+            background: var(--warning);
+            color: white;
+        }
+
+        .type-vip {
+            background: var(--danger);
+            color: white;
+        }
+
+        .type-penalty {
+            background: #6b7280;
+            color: white;
+        }
+
+        .type-streak {
+            background: #8b5cf6;
+            color: white;
+        }
+
+        .history-value {
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 22px;
+            }
+        }
     </style>
 </head>
+
 <body>
     <div class="container">
         <header>
@@ -128,70 +408,144 @@
             <div class="card base-color">
                 <h2>✅ Livello Base (1 token)</h2>
                 <div class="item-list">
-                    <div class="item"><span class="item-name">Completare compiti scolastici</span><span class="token-badge">1</span></div>
-                    <div class="item"><span class="item-name">Riordinare quando chiesto da mamma</span><span class="token-badge">1</span></div>
-                    <div class="item"><span class="item-name">Rispettare il limite di tempo telefono (2 ore al giorno, 4 ore nei feriali)</span><span class="token-badge">1</span></div>
-                    <div class="item"><span class="item-name">Mangiare tutto senza lamentarsi</span><span class="token-badge">1</span></div>
-                    <div class="item"><span class="item-name">Giocare con il cane per 20 minuti senza distrazioni</span><span class="token-badge">1</span></div>
-                    <div class="item"><span class="item-name">Bere un bicchiere d'acqua fuori pasto (max 5 punti al giorno)</span><span class="token-badge">1</span></div>
-                    <div class="item"><span class="item-name">Suonare la batteria elettrica per 30 minuti</span><span class="token-badge">1</span></div>
+                    <div class="item"><span class="item-name">Completare compiti scolastici</span><span
+                            class="token-badge">1</span></div>
+                    <div class="item"><span class="item-name">Riordinare quando chiesto da mamma</span><span
+                            class="token-badge">1</span></div>
+                    <div class="item"><span class="item-name">Rispettare il limite di tempo telefono (2 ore al giorno, 4
+                            ore nei feriali)</span><span class="token-badge">1</span></div>
+                    <div class="item"><span class="item-name">Mangiare tutto senza lamentarsi</span><span
+                            class="token-badge">1</span></div>
+                    <div class="item"><span class="item-name">Giocare con il cane per 20 minuti senza
+                            distrazioni</span><span class="token-badge">1</span></div>
+                    <div class="item"><span class="item-name">Bere un bicchiere d'acqua fuori pasto (max 5 punti al
+                            giorno)</span><span class="token-badge">1</span></div>
+                    <div class="item"><span class="item-name">Suonare la batteria elettrica per 30 minuti</span><span
+                            class="token-badge">1</span></div>
+                    <div class="item"><span class="item-name">Andare a letto entro le 22:30</span><span
+                            class="token-badge">1</span></div>
+                    <div class="item"><span class="item-name">Preparare lo zaino (1 token ogni 2 giorni)</span><span
+                            class="token-badge">1</span></div>
                 </div>
             </div>
 
             <div class="card pro-color">
                 <h2>🌟 Livello Pro (3 token)</h2>
                 <div class="item-list">
-                    <div class="item"><span class="item-name">Partecipare a visite mediche con coraggio</span><span class="token-badge">3</span></div>
-                    <div class="item"><span class="item-name">Leggere un libro di almeno 80 pagine (No fumetti)</span><span class="token-badge">3</span></div>
-                    <div class="item"><span class="item-name">Partecipare a un gioco di società completo (no smartphone)</span><span class="token-badge">3</span></div>
-                    <div class="item"><span class="item-name">Imparare una ricetta seguendo chi sta cucinando</span><span class="token-badge">3</span></div>
+                    <div class="item"><span class="item-name">Partecipare a visite mediche con coraggio</span><span
+                            class="token-badge">3</span></div>
+                    <div class="item"><span class="item-name">Leggere un libro di almeno 80 pagine (No
+                            fumetti)</span><span class="token-badge">3</span></div>
+                    <div class="item"><span class="item-name">Partecipare a un gioco di società completo (no
+                            smartphone)</span><span class="token-badge">3</span></div>
+                    <div class="item"><span class="item-name">Imparare una ricetta seguendo chi sta
+                            cucinando</span><span class="token-badge">3</span></div>
+                    <div class="item"><span class="item-name">Chiacchierare dal vivo con un parente</span><span
+                            class="token-badge">3</span></div>
                 </div>
             </div>
 
             <div class="card vip-color">
                 <h2>🏆 Livello VIP (8 token)</h2>
                 <div class="item-list">
-                    <div class="item"><span class="item-name">Imparare a suonare un brano completo con la batteria</span><span class="token-badge">8</span></div>
-                    <div class="item"><span class="item-name">Creare un fumetto originale di almeno 8 tavole</span><span class="token-badge">8</span></div>
-                    <div class="item"><span class="item-name">Passare un giorno intero senza schermi (tv, smartphone, tablet...)</span><span class="token-badge">8</span></div>
+                    <div class="item"><span class="item-name">Imparare a suonare un brano completo con la
+                            batteria</span><span class="token-badge">8</span></div>
+                    <div class="item"><span class="item-name">Creare un fumetto originale di almeno 8 tavole</span><span
+                            class="token-badge">8</span></div>
+                    <div class="item"><span class="item-name">Passare un giorno intero senza schermi (tv, smartphone,
+                            tablet...)</span><span class="token-badge">8</span></div>
+                    <div class="item"><span class="item-name">Prendere un voto alto (9 o 10)</span><span
+                            class="token-badge">8</span></div>
+                    <div class="item"><span class="item-name">Risparmiare i token per almeno 14 giorni anziché
+                            spenderli</span><span class="token-badge">8</span></div>
                 </div>
             </div>
         </div>
 
-        <div class="card">
-            <h2>⚠️ Penalità</h2>
-            <div class="penalties">
-                <div class="penalty-item"><span class="penalty-name">Telefono oltre limite</span><span class="penalty-value">-2</span></div>
-                <div class="penalty-item"><span class="penalty-name">Lamentarsi durante i pasti</span><span class="penalty-value">-1</span></div>
-                <div class="penalty-item"><span class="penalty-name">Non completare compiti</span><span class="penalty-value">-2</span></div>
-                <div class="penalty-item"><span class="penalty-name">Non mantenere promesse</span><span class="penalty-value">-15</span></div>
-                <div class="penalty-item"><span class="penalty-name">Fare i capricci</span><span class="penalty-value">-1</span></div>
-                <div class="penalty-item"><span class="penalty-name">Voto negativo a scuola</span><span class="penalty-value">-50</span></div>
+        <div class="card" style="border-top: 5px solid var(--danger);">
+            <h2 style="color: var(--danger);">⚠️ Penalità</h2>
+            <div class="penalties-grid">
+                <div class="penalty-header">
+                    <span>Azione</span>
+                    <span>Costo</span>
+                </div>
+                <div class="penalty-row">
+                    <span class="penalty-name">Lamentarsi durante i pasti</span>
+                    <span class="penalty-badge">-1</span>
+                </div>
+                <div class="penalty-row">
+                    <span class="penalty-name">Fare i capricci</span>
+                    <span class="penalty-badge">-1</span>
+                </div>
+                <div class="penalty-row">
+                    <span class="penalty-name">Telefono oltre limite</span>
+                    <span class="penalty-badge">-2</span>
+                </div>
+                <div class="penalty-row">
+                    <span class="penalty-name">Non completare compiti</span>
+                    <span class="penalty-badge">-2</span>
+                </div>
+                <div class="penalty-row">
+                    <span class="penalty-name">Non mantenere le promesse</span>
+                    <span class="penalty-badge">-15</span>
+                </div>
+                <div class="penalty-row">
+                    <span class="penalty-name">Voto negativo a scuola</span>
+                    <span class="penalty-badge">-50</span>
+                </div>
             </div>
+            <p style="margin-top: 15px; font-size: 13px; color: var(--gray-700); font-style: italic;">
+                * Le penalità resettano anche i giorni di streak accumulati.
+            </p>
         </div>
 
         <div class="card">
             <h2>🎁 Bonus Streak (Giorni senza penalità)</h2>
             <div class="item-list">
-                <div class="item"><span class="item-name">7 giorni senza penalità</span><span class="token-badge">1</span></div>
-                <div class="item"><span class="item-name">14 giorni senza penalità</span><span class="token-badge">3</span></div>
-                <div class="item"><span class="item-name">21 giorni senza penalità</span><span class="token-badge">6</span></div>
-                <div class="item"><span class="item-name">28 giorni senza penalità</span><span class="token-badge">10</span></div>
+                <div class="item"><span class="item-name">7 giorni senza penalità</span><span
+                        class="token-badge">1</span></div>
+                <div class="item"><span class="item-name">14 giorni senza penalità</span><span
+                        class="token-badge">3</span></div>
+                <div class="item"><span class="item-name">21 giorni senza penalità</span><span
+                        class="token-badge">6</span></div>
+                <div class="item"><span class="item-name">28 giorni senza penalità</span><span
+                        class="token-badge">10</span></div>
             </div>
         </div>
 
         <div class="card">
             <h2>🎮 Premi (Scambio Token)</h2>
             <div class="section-title">60 Token</div>
-            <div class="premi-item"><div class="premi-header">Opzione A: Ricarica Play Store</div><div class="premi-option">Ricarica da 5 euro</div></div>
-            <div class="premi-item"><div class="premi-header">Opzione B: Cibo</div><div class="premi-option">Kebab</div></div>
+            <div class="premi-item">
+                <div class="premi-header">Opzione A: Ricarica Play Store</div>
+                <div class="premi-option">Ricarica da 5 euro</div>
+            </div>
+            <div class="premi-item">
+                <div class="premi-header">Opzione B: Cibo</div>
+                <div class="premi-option">Kebab</div>
+            </div>
             <div class="section-title">120 Token</div>
-            <div class="premi-item"><div class="premi-header">Opzione A: Ricarica Play Store</div><div class="premi-option">Ricarica da 10 euro</div></div>
-            <div class="premi-item"><div class="premi-header">Opzione B: Cibo</div><div class="premi-option">McDonald's</div></div>
+            <div class="premi-item">
+                <div class="premi-header">Opzione A: Ricarica Play Store</div>
+                <div class="premi-option">Ricarica da 10 euro</div>
+            </div>
+            <div class="premi-item">
+                <div class="premi-header">Opzione B: Cibo</div>
+                <div class="premi-option">McDonald's</div>
+            </div>
             <div class="section-title">180 Token</div>
-            <div class="premi-item"><div class="premi-header">Opzione A: Ricarica Play Store</div><div class="premi-option">Ricarica da 20 euro</div></div>
-            <div class="premi-item"><div class="premi-header">Opzione B: Cibo</div><div class="premi-option">Mangiare sushi</div></div>
-            <div style="background: var(--warning); color: white; padding: 15px; border-radius: 8px; margin-top: 20px; font-size: 13px;">ℹ️ È possibile barattare token per quello che vuole, purché sia d'accordo la mamma. Se non è d'accordo, non insistere. Insistere comporta penalità di 3 token.</div>
+            <div class="premi-item">
+                <div class="premi-header">Opzione A: Ricarica Play Store</div>
+                <div class="premi-option">Ricarica da 20 euro</div>
+            </div>
+            <div class="premi-item">
+                <div class="premi-header">Opzione B: Cibo</div>
+                <div class="premi-option">Mangiare sushi</div>
+            </div>
+            <div
+                style="background: var(--warning); color: white; padding: 15px; border-radius: 8px; margin-top: 20px; font-size: 13px;">
+                ℹ️ È possibile barattare token per quello che vuole, purché sia d'accordo la mamma. Se non è d'accordo,
+                non insistere. Insistere comporta penalità di 3 token.</div>
         </div>
 
         <div class="footer">
@@ -225,10 +579,10 @@
         function addToHistory(type, amount, description) {
             const data = loadData();
             if (!data.history) data.history = [];
-            
+
             const now = new Date();
             const timeStr = now.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
-            
+
             data.history.unshift({
                 type: type,
                 amount: amount,
@@ -236,11 +590,11 @@
                 time: timeStr,
                 date: now.toLocaleDateString('it-IT')
             });
-            
+
             if (data.history.length > 20) {
                 data.history = data.history.slice(0, 20);
             }
-            
+
             saveData(data);
             updateHistory();
         }
@@ -248,17 +602,17 @@
         function updateHistory() {
             const data = loadData();
             const historyList = document.getElementById('historyList');
-            
+
             if (!data.history || data.history.length === 0) {
                 historyList.innerHTML = '<p style="color: var(--gray-700); font-size: 13px;">Nessun movimento ancora...</p>';
                 return;
             }
-            
+
             let html = '';
             data.history.forEach(item => {
                 let typeClass = 'type-base';
                 let typeEmoji = '📌';
-                
+
                 if (item.type === 'pro') {
                     typeClass = 'type-pro';
                     typeEmoji = '⭐';
@@ -272,10 +626,10 @@
                     typeClass = 'type-streak';
                     typeEmoji = '🎉';
                 }
-                
+
                 const sign = item.amount > 0 ? '+' : '';
                 const color = item.amount > 0 ? 'var(--success)' : 'var(--danger)';
-                
+
                 html += `
                     <div class="history-item">
                         <div>
@@ -288,7 +642,7 @@
                     </div>
                 `;
             });
-            
+
             historyList.innerHTML = html;
         }
 
@@ -321,9 +675,9 @@
             const amount = parseInt(document.getElementById('tokenAmount').value) || 1;
             const type = document.getElementById('tokenType').value;
             const data = loadData();
-            
+
             data.totalTokens += amount;
-            
+
             if (type === 'base') {
                 data.baseTokens += amount;
             } else if (type === 'pro') {
@@ -331,7 +685,7 @@
             } else if (type === 'vip') {
                 data.vipTokens += amount;
             }
-            
+
             saveData(data);
             updateDisplay();
             addToHistory(type, amount, `Aggiunti ${amount} token ${type}`);
@@ -342,9 +696,9 @@
             const amount = parseInt(document.getElementById('tokenAmount').value) || 1;
             const type = document.getElementById('tokenType').value;
             const data = loadData();
-            
+
             data.totalTokens = Math.max(0, data.totalTokens - amount);
-            
+
             if (type === 'base') {
                 data.baseTokens = Math.max(0, data.baseTokens - amount);
             } else if (type === 'pro') {
@@ -352,7 +706,7 @@
             } else if (type === 'vip') {
                 data.vipTokens = Math.max(0, data.vipTokens - amount);
             }
-            
+
             saveData(data);
             updateDisplay();
             addToHistory(type, -amount, `Rimossi ${amount} token ${type}`);
@@ -424,4 +778,5 @@
         updateHistory();
     </script>
 </body>
+
 </html>
