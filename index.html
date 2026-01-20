@@ -6,7 +6,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>Token Economy Tracker v123</title>
+    <title>Token Economy Tracker v124</title>
     <style>
         :root {
             --primary: #3182f6;
@@ -46,7 +46,7 @@
         .footer { background: white; padding: 20px; border-radius: 10px; text-align: center; font-size: 13px; color: var(--gray-700); margin-top: 30px; }
         .edit-section { background: var(--gray-100); padding: 20px; border-radius: 10px; margin: 30px 0; }
         .edit-controls { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
-        input[type="password"], input[type="number"], input[type="text"] { padding: 8px 12px; border: 1px solid var(--gray-200); border-radius: 6px; font-size: 14px; }
+        input[type="password"], input[type="number"], input[type="text"], select { padding: 8px 12px; border: 1px solid var(--gray-200); border-radius: 6px; font-size: 14px; }
         button { padding: 10px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; }
         .btn-primary { background: var(--primary); color: white; }
         .btn-primary:hover { background: var(--primary-dark); }
@@ -57,6 +57,15 @@
         .status { background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
         .status-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--gray-200); }
         .status-item:last-child { border-bottom: none; }
+        .history-list { max-height: 300px; overflow-y: auto; }
+        .history-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: var(--gray-100); border-radius: 6px; margin-bottom: 8px; font-size: 13px; }
+        .history-type { padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 11px; }
+        .type-base { background: var(--success); color: white; }
+        .type-pro { background: var(--warning); color: white; }
+        .type-vip { background: var(--danger); color: white; }
+        .type-penalty { background: #6b7280; color: white; }
+        .type-streak { background: #8b5cf6; color: white; }
+        .history-value { font-weight: bold; color: var(--primary); }
         @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } h1 { font-size: 22px; } }
     </style>
 </head>
@@ -76,6 +85,13 @@
             <div class="status-item"><span>Token persi da penalità:</span><span id="penaltyTokens">0</span></div>
         </div>
 
+        <div class="card">
+            <h2>📊 Storico Token Ultimi</h2>
+            <div class="history-list" id="historyList">
+                <p style="color: var(--gray-700); font-size: 13px;">Nessun movimento ancora...</p>
+            </div>
+        </div>
+
         <div class="edit-section">
             <h3 style="margin-bottom: 15px;">⚙️ Gestione Token</h3>
             <div class="edit-controls">
@@ -84,9 +100,14 @@
             </div>
             <div id="editContent" style="display: none;">
                 <div class="edit-controls">
+                    <select id="tokenType">
+                        <option value="base">📌 Token Base</option>
+                        <option value="pro">⭐ Token Pro</option>
+                        <option value="vip">🏆 Token VIP</option>
+                    </select>
                     <input type="number" id="tokenAmount" placeholder="Numero token" value="1" min="1">
-                    <button class="btn-success" onclick="addToken()">+ Aggiungi Token</button>
-                    <button class="btn-danger" onclick="removeToken()">- Rimuovi Token</button>
+                    <button class="btn-success" onclick="addTokenTyped()">+ Aggiungi Token</button>
+                    <button class="btn-danger" onclick="removeTokenTyped()">- Rimuovi Token</button>
                 </div>
                 <div class="edit-controls">
                     <input type="number" id="penaltyAmount" placeholder="Penalità" value="1" min="1" max="2">
@@ -192,12 +213,83 @@
                 baseTokens: 0,
                 proTokens: 0,
                 vipTokens: 0,
-                penaltyTokens: 0
+                penaltyTokens: 0,
+                history: []
             };
         }
 
         function saveData(data) {
             localStorage.setItem('tokenEconomy', JSON.stringify(data));
+        }
+
+        function addToHistory(type, amount, description) {
+            const data = loadData();
+            if (!data.history) data.history = [];
+            
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+            
+            data.history.unshift({
+                type: type,
+                amount: amount,
+                description: description,
+                time: timeStr,
+                date: now.toLocaleDateString('it-IT')
+            });
+            
+            if (data.history.length > 20) {
+                data.history = data.history.slice(0, 20);
+            }
+            
+            saveData(data);
+            updateHistory();
+        }
+
+        function updateHistory() {
+            const data = loadData();
+            const historyList = document.getElementById('historyList');
+            
+            if (!data.history || data.history.length === 0) {
+                historyList.innerHTML = '<p style="color: var(--gray-700); font-size: 13px;">Nessun movimento ancora...</p>';
+                return;
+            }
+            
+            let html = '';
+            data.history.forEach(item => {
+                let typeClass = 'type-base';
+                let typeEmoji = '📌';
+                
+                if (item.type === 'pro') {
+                    typeClass = 'type-pro';
+                    typeEmoji = '⭐';
+                } else if (item.type === 'vip') {
+                    typeClass = 'type-vip';
+                    typeEmoji = '🏆';
+                } else if (item.type === 'penalty') {
+                    typeClass = 'type-penalty';
+                    typeEmoji = '⚠️';
+                } else if (item.type === 'streak') {
+                    typeClass = 'type-streak';
+                    typeEmoji = '🎉';
+                }
+                
+                const sign = item.amount > 0 ? '+' : '';
+                const color = item.amount > 0 ? 'var(--success)' : 'var(--danger)';
+                
+                html += `
+                    <div class="history-item">
+                        <div>
+                            <span class="history-type ${typeClass}">${typeEmoji} ${item.type.toUpperCase()}</span>
+                            <span style="margin-left: 8px; font-size: 12px; color: var(--gray-700);">${item.time}</span>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="color: ${color}; font-weight: bold;">${sign}${item.amount}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            historyList.innerHTML = html;
         }
 
         function updateDisplay() {
@@ -225,24 +317,46 @@
             }
         }
 
-        function addToken() {
+        function addTokenTyped() {
             const amount = parseInt(document.getElementById('tokenAmount').value) || 1;
+            const type = document.getElementById('tokenType').value;
             const data = loadData();
+            
             data.totalTokens += amount;
-            data.baseTokens += amount;
+            
+            if (type === 'base') {
+                data.baseTokens += amount;
+            } else if (type === 'pro') {
+                data.proTokens += amount;
+            } else if (type === 'vip') {
+                data.vipTokens += amount;
+            }
+            
             saveData(data);
             updateDisplay();
-            alert(`✅ Aggiunti ${amount} token!`);
+            addToHistory(type, amount, `Aggiunti ${amount} token ${type}`);
+            alert(`✅ Aggiunti ${amount} token ${type.toUpperCase()}!`);
         }
 
-        function removeToken() {
+        function removeTokenTyped() {
             const amount = parseInt(document.getElementById('tokenAmount').value) || 1;
+            const type = document.getElementById('tokenType').value;
             const data = loadData();
+            
             data.totalTokens = Math.max(0, data.totalTokens - amount);
-            data.baseTokens = Math.max(0, data.baseTokens - amount);
+            
+            if (type === 'base') {
+                data.baseTokens = Math.max(0, data.baseTokens - amount);
+            } else if (type === 'pro') {
+                data.proTokens = Math.max(0, data.proTokens - amount);
+            } else if (type === 'vip') {
+                data.vipTokens = Math.max(0, data.vipTokens - amount);
+            }
+            
             saveData(data);
             updateDisplay();
-            alert(`❌ Rimossi ${amount} token!`);
+            addToHistory(type, -amount, `Rimossi ${amount} token ${type}`);
+            alert(`❌ Rimossi ${amount} token ${type.toUpperCase()}!`);
         }
 
         function addPenalty() {
@@ -253,6 +367,7 @@
             data.streakDays = 0;
             saveData(data);
             updateDisplay();
+            addToHistory('penalty', -amount, `Penalità applicata`);
             alert(`⚠️ Applicata penalità di ${amount} token! Streak resettato.`);
         }
 
@@ -264,11 +379,15 @@
                 const rewards = { 7: 1, 14: 3, 21: 6, 28: 10 };
                 const bonus = rewards[data.streakDays];
                 data.totalTokens += bonus;
+                saveData(data);
+                updateDisplay();
+                addToHistory('streak', bonus, `Bonus ${data.streakDays} giorni`);
                 alert(`🎉 Complimenti! Hai raggiunto ${data.streakDays} giorni senza penalità! Bonus: +${bonus} token!`);
+            } else {
+                saveData(data);
+                updateDisplay();
+                addToHistory('streak', 0, `+1 giorno streak`);
             }
-
-            saveData(data);
-            updateDisplay();
         }
 
         function setStreakDays() {
@@ -280,24 +399,29 @@
                 const rewards = { 7: 1, 14: 3, 21: 6, 28: 10 };
                 const bonus = rewards[days];
                 data.totalTokens += bonus;
+                saveData(data);
+                updateDisplay();
+                addToHistory('streak', bonus, `Bonus ${days} giorni`);
                 alert(`🎉 Hai raggiunto ${days} giorni senza penalità! Bonus: +${bonus} token!`);
             } else {
+                saveData(data);
+                updateDisplay();
+                addToHistory('streak', 0, `Impostati ${days} giorni`);
                 alert(`✅ Impostati ${days} giorni senza penalità!`);
             }
-
-            saveData(data);
-            updateDisplay();
         }
 
         function resetData() {
             if (confirm('Sei sicuro di voler resettare tutti i dati? Questa azione non può essere annullata.')) {
                 localStorage.removeItem('tokenEconomy');
                 updateDisplay();
+                updateHistory();
                 alert('🔄 Dati resettati!');
             }
         }
 
         updateDisplay();
+        updateHistory();
     </script>
 </body>
 </html>
