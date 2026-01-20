@@ -120,6 +120,7 @@
             <div class="status-item"><span>Token da azioni base:</span><span id="baseTokens">...</span></div>
             <div class="status-item"><span>Token da azioni pro:</span><span id="proTokens">...</span></div>
             <div class="status-item"><span>Token da azioni VIP:</span><span id="vipTokens">...</span></div>
+            <div class="status-item"><span>Token Extra (Manuali):</span><span id="manualTokens">...</span></div>
             <div class="status-item"><span>Token persi da penalità:</span><span id="penaltyTokens">...</span></div>
         </div>
 
@@ -323,7 +324,7 @@
         let isAdminUnlocked = false;
         let currentData = {
             totalTokens: 0, streakDays: 0, baseTokens: 0,
-            proTokens: 0, vipTokens: 0, penaltyTokens: 0, history: []
+            proTokens: 0, vipTokens: 0, penaltyTokens: 0, manualTokens: 0, history: []
         };
 
         // SYNC
@@ -399,7 +400,13 @@
             const customReason = document.getElementById('customReason').value.trim();
             const reason = customReason !== "" ? customReason : "Aggiunta manuale";
 
-            window.clickTask(amount, type, reason); // Riutilizza la funzione clickTask
+            // Incrementa il totale e il tipo
+            window.clickTask(amount, type, reason); 
+            
+            // Incrementa anche il contatore MANUALE
+            if(!currentData.manualTokens) currentData.manualTokens = 0;
+            currentData.manualTokens += amount;
+            
             document.getElementById('customReason').value = "";
         }
 
@@ -415,6 +422,10 @@
             else if (type === 'pro') currentData.proTokens = Math.max(0, currentData.proTokens - amount);
             else if (type === 'vip') currentData.vipTokens = Math.max(0, currentData.vipTokens - amount);
             
+            // Decrementa il contatore MANUALE
+            if(!currentData.manualTokens) currentData.manualTokens = 0;
+            currentData.manualTokens = Math.max(0, currentData.manualTokens - amount);
+
             addToHistory(type, -amount, customReason || "Rimozione manuale");
             alert(`❌ Rimossi ${amount} token`);
         }
@@ -436,7 +447,7 @@
 
         window.resetData = function() {
             if (confirm('SICURO? Cancella tutto per sempre.')) {
-                currentData = { totalTokens: 0, streakDays: 0, baseTokens: 0, proTokens: 0, vipTokens: 0, penaltyTokens: 0, history: [] };
+                currentData = { totalTokens: 0, streakDays: 0, baseTokens: 0, proTokens: 0, vipTokens: 0, penaltyTokens: 0, manualTokens: 0, history: [] };
                 saveDataToCloud();
             }
         }
@@ -473,6 +484,7 @@
             document.getElementById('baseTokens').textContent = currentData.baseTokens;
             document.getElementById('proTokens').textContent = currentData.proTokens;
             document.getElementById('vipTokens').textContent = currentData.vipTokens;
+            document.getElementById('manualTokens').textContent = currentData.manualTokens || 0;
             document.getElementById('penaltyTokens').textContent = currentData.penaltyTokens;
         }
 
