@@ -35,10 +35,13 @@
         .item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: var(--gray-100); border-radius: 8px; font-size: 14px; }
         .item-name { flex: 1; }
         .token-badge { background: var(--primary); color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 12px; }
-        .penalties { background: var(--gray-100); padding: 15px; border-radius: 8px; margin-top: 15px; }
-        .penalty-item { font-size: 13px; margin: 8px 0; display: flex; justify-content: space-between; }
-        .penalty-name { flex: 1; }
-        .penalty-value { color: var(--danger); font-weight: bold; }
+        
+        .penalties-grid { display: grid; grid-template-columns: 1fr; gap: 1px; background: var(--gray-200); border-radius: 8px; overflow: hidden; margin-top: 15px; border: 1px solid var(--gray-200); }
+        .penalty-header { display: flex; justify-content: space-between; background: var(--gray-100); padding: 12px 15px; font-weight: bold; color: var(--gray-700); font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .penalty-row { display: flex; justify-content: space-between; align-items: center; background: white; padding: 12px 15px; font-size: 14px; }
+        .penalty-row:hover { background: #fef2f2; }
+        .penalty-badge { background: #fee2e2; color: var(--danger); font-weight: bold; padding: 4px 10px; border-radius: 20px; font-size: 13px; min-width: 40px; text-align: center; }
+
         .section-title { background: var(--primary); color: white; padding: 15px; border-radius: 8px; margin: 20px 0 15px; font-size: 16px; font-weight: bold; }
         .premi-item { background: var(--gray-100); padding: 15px; border-radius: 8px; margin-bottom: 12px; }
         .premi-header { font-weight: bold; color: var(--primary); margin-bottom: 8px; }
@@ -119,7 +122,12 @@
                     <button class="btn-primary" onclick="addStreakDay()">+ 1 Giorno Senza Penalità</button>
                 </div>
                 <div class="edit-controls">
-                    <button class="btn-danger" onclick="resetData()">🔄 Ripristina Tutto</button>
+                    <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--gray-200);">
+                        <p style="margin-bottom: 10px; font-size: 13px; font-weight: bold;">💾 Backup e Ripristino</p>
+                        <button class="btn-primary" onclick="exportData()" style="background: #6366f1;">📤 Esporta Dati</button>
+                        <button class="btn-primary" onclick="importData()" style="background: #8b5cf6;">📥 Importa Dati</button>
+                        <button class="btn-danger" onclick="resetData()" style="margin-left: 10px;">🔄 Reset</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -135,6 +143,8 @@
                     <div class="item"><span class="item-name">Giocare con il cane per 20 minuti senza distrazioni</span><span class="token-badge">1</span></div>
                     <div class="item"><span class="item-name">Bere un bicchiere d'acqua fuori pasto (max 5 punti al giorno)</span><span class="token-badge">1</span></div>
                     <div class="item"><span class="item-name">Suonare la batteria elettrica per 30 minuti</span><span class="token-badge">1</span></div>
+                    <div class="item"><span class="item-name">Andare a letto entro le 22:30</span><span class="token-badge">1</span></div>
+                    <div class="item"><span class="item-name">Preparare lo zaino (1 token ogni 2 giorni)</span><span class="token-badge">1</span></div>
                 </div>
             </div>
 
@@ -145,6 +155,7 @@
                     <div class="item"><span class="item-name">Leggere un libro di almeno 80 pagine (No fumetti)</span><span class="token-badge">3</span></div>
                     <div class="item"><span class="item-name">Partecipare a un gioco di società completo (no smartphone)</span><span class="token-badge">3</span></div>
                     <div class="item"><span class="item-name">Imparare una ricetta seguendo chi sta cucinando</span><span class="token-badge">3</span></div>
+                    <div class="item"><span class="item-name">Chiacchierare dal vivo con un parente</span><span class="token-badge">3</span></div>
                 </div>
             </div>
 
@@ -154,20 +165,47 @@
                     <div class="item"><span class="item-name">Imparare a suonare un brano completo con la batteria</span><span class="token-badge">8</span></div>
                     <div class="item"><span class="item-name">Creare un fumetto originale di almeno 8 tavole</span><span class="token-badge">8</span></div>
                     <div class="item"><span class="item-name">Passare un giorno intero senza schermi (tv, smartphone, tablet...)</span><span class="token-badge">8</span></div>
+                    <div class="item"><span class="item-name">Prendere un voto alto (9 o 10)</span><span class="token-badge">8</span></div>
+                    <div class="item"><span class="item-name">Risparmiare i token per almeno 14 giorni anziché spenderli</span><span class="token-badge">8</span></div>
                 </div>
             </div>
         </div>
 
-        <div class="card">
-            <h2>⚠️ Penalità</h2>
-            <div class="penalties">
-                <div class="penalty-item"><span class="penalty-name">Telefono oltre limite</span><span class="penalty-value">-2</span></div>
-                <div class="penalty-item"><span class="penalty-name">Lamentarsi durante i pasti</span><span class="penalty-value">-1</span></div>
-                <div class="penalty-item"><span class="penalty-name">Non completare compiti</span><span class="penalty-value">-2</span></div>
-                <div class="penalty-item"><span class="penalty-name">Non mantenere promesse</span><span class="penalty-value">-15</span></div>
-                <div class="penalty-item"><span class="penalty-name">Fare i capricci</span><span class="penalty-value">-1</span></div>
-                <div class="penalty-item"><span class="penalty-name">Voto negativo a scuola</span><span class="penalty-value">-50</span></div>
+        <div class="card" style="border-top: 5px solid var(--danger);">
+            <h2 style="color: var(--danger);">⚠️ Penalità</h2>
+            <div class="penalties-grid">
+                <div class="penalty-header">
+                    <span>Azione</span>
+                    <span>Costo</span>
+                </div>
+                <div class="penalty-row">
+                    <span class="penalty-name">Lamentarsi durante i pasti</span>
+                    <span class="penalty-badge">-1</span>
+                </div>
+                <div class="penalty-row">
+                    <span class="penalty-name">Fare i capricci</span>
+                    <span class="penalty-badge">-1</span>
+                </div>
+                <div class="penalty-row">
+                    <span class="penalty-name">Telefono oltre limite</span>
+                    <span class="penalty-badge">-2</span>
+                </div>
+                <div class="penalty-row">
+                    <span class="penalty-name">Non completare compiti</span>
+                    <span class="penalty-badge">-2</span>
+                </div>
+                <div class="penalty-row">
+                    <span class="penalty-name">Non mantenere le promesse</span>
+                    <span class="penalty-badge">-15</span>
+                </div>
+                <div class="penalty-row">
+                    <span class="penalty-name">Voto negativo a scuola</span>
+                    <span class="penalty-badge">-50</span>
+                </div>
             </div>
+            <p style="margin-top: 15px; font-size: 13px; color: var(--gray-700); font-style: italic;">
+                * Le penalità resettano anche i giorni di streak accumulati.
+            </p>
         </div>
 
         <div class="card">
@@ -417,6 +455,35 @@
                 updateDisplay();
                 updateHistory();
                 alert('🔄 Dati resettati!');
+            }
+        }
+
+        function exportData() {
+            const data = loadData();
+            const dataStr = JSON.stringify(data);
+            navigator.clipboard.writeText(dataStr).then(() => {
+                alert('✅ Dati copiati negli appunti!\n\nInvia questo testo al tuo altro dispositivo (mail, whatsapp, telegram...) e usa "Importa Dati" sull\'altro dispositivo.');
+            }).catch(err => {
+                prompt("Copia questo testo manualmente:", dataStr);
+            });
+        }
+
+        function importData() {
+            const input = prompt("Incolla qui i dati esportati dall'altro dispositivo:");
+            if (input) {
+                try {
+                    const data = JSON.parse(input);
+                    if (data && typeof data.totalTokens === 'number') {
+                        saveData(data);
+                        updateDisplay();
+                        updateHistory();
+                        alert('✅ Dati importati con successo!');
+                    } else {
+                        alert('❌ I dati incollati non sembrano validi.');
+                    }
+                } catch (e) {
+                    alert('❌ Errore nella lettura dei dati. Assicurati di aver copiato tutto il testo.');
+                }
             }
         }
 
