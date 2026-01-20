@@ -78,6 +78,7 @@
         .type-base { background: var(--success); color: white; }
         .type-pro { background: var(--warning); color: white; }
         .type-vip { background: var(--danger); color: white; }
+        .type-extra { background: #3b82f6; color: white; } /* Colore Blu per Extra */
         .type-penalty { background: #6b7280; color: white; }
         .type-streak { background: #8b5cf6; color: white; }
 
@@ -139,7 +140,12 @@
             <div id="editContent" style="display: none;">
                 <input type="text" id="customReason" class="reason-input" placeholder="📝 Motivo personalizzato (es. Compiti extra)">
                 <div class="edit-controls">
-                    <select id="tokenType"><option value="base">Base</option><option value="pro">Pro</option><option value="vip">VIP</option></select>
+                    <select id="tokenType">
+                        <option value="base">Base</option>
+                        <option value="pro">Pro</option>
+                        <option value="vip">VIP</option>
+                        <option value="extra">Extra</option>
+                    </select>
                     <input type="number" id="tokenAmount" value="1" style="width: 60px;">
                     <button class="btn-success" onclick="window.addTokenTyped()">+ Aggiungi</button>
                     <button class="btn-danger" onclick="window.removeTokenTyped()">- Rimuovi</button>
@@ -367,11 +373,16 @@
                 return;
             }
             
-            // Logica aggiunta
             currentData.totalTokens += amount;
+            
+            // SMISTAMENTO CONTATORI
             if (type === 'base') currentData.baseTokens += amount;
             else if (type === 'pro') currentData.proTokens += amount;
             else if (type === 'vip') currentData.vipTokens += amount;
+            else if (type === 'extra') {
+                if(!currentData.manualTokens) currentData.manualTokens = 0;
+                currentData.manualTokens += amount;
+            }
 
             addToHistory(type, amount, description);
         }
@@ -400,12 +411,8 @@
             const customReason = document.getElementById('customReason').value.trim();
             const reason = customReason !== "" ? customReason : "Aggiunta manuale";
 
-            // Incrementa il totale e il tipo
+            // Chiama clickTask che gestisce lo smistamento in base al tipo (incluso Extra)
             window.clickTask(amount, type, reason); 
-            
-            // Incrementa anche il contatore MANUALE
-            if(!currentData.manualTokens) currentData.manualTokens = 0;
-            currentData.manualTokens += amount;
             
             document.getElementById('customReason').value = "";
         }
@@ -415,17 +422,16 @@
             const type = document.getElementById('tokenType').value;
             const customReason = document.getElementById('customReason').value.trim();
             
-            // MODIFICA: Limite minimo -5 anche qui
             currentData.totalTokens = Math.max(-5, currentData.totalTokens - amount);
             
             if (type === 'base') currentData.baseTokens = Math.max(0, currentData.baseTokens - amount);
             else if (type === 'pro') currentData.proTokens = Math.max(0, currentData.proTokens - amount);
             else if (type === 'vip') currentData.vipTokens = Math.max(0, currentData.vipTokens - amount);
+            else if (type === 'extra') {
+                if(!currentData.manualTokens) currentData.manualTokens = 0;
+                currentData.manualTokens = Math.max(0, currentData.manualTokens - amount);
+            }
             
-            // Decrementa il contatore MANUALE
-            if(!currentData.manualTokens) currentData.manualTokens = 0;
-            currentData.manualTokens = Math.max(0, currentData.manualTokens - amount);
-
             addToHistory(type, -amount, customReason || "Rimozione manuale");
             alert(`❌ Rimossi ${amount} token`);
         }
@@ -497,6 +503,7 @@
                 let cl = 'type-base', em = '📌', col = 'var(--success)', sign='+';
                 if(item.type=='pro'){cl='type-pro'; em='⭐';}
                 if(item.type=='vip'){cl='type-vip'; em='🏆'; col='var(--danger)';}
+                if(item.type=='extra'){cl='type-extra'; em='✨'; col='var(--primary)';}
                 if(item.type=='penalty'){cl='type-penalty'; em='⚠️'; col='var(--danger)'; sign='';}
                 if(item.type=='streak'){cl='type-streak'; em='🔥';}
                 if(item.amount < 0) { col='var(--danger)'; sign=''; }
