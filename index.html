@@ -13,50 +13,34 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--gray-100); color: var(--gray-900); padding: 20px; }
         .container { max-width: 1200px; margin: 0 auto; }
+        
+        /* HEADER */
         header { background: white; padding: 20px; border-radius: 10px; margin-bottom: 30px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         h1 { font-size: 28px; margin-bottom: 10px; }
+        header p { color: var(--gray-700); font-style: italic; margin-bottom: 15px; }
         .token-display { font-size: 24px; color: var(--primary); font-weight: bold; margin: 15px 0; }
         
-        /* LAYOUT GRIGLIE (Usato per tutto ora) */
+        /* LAYOUT GRIGLIE */
         .card-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-top: 15px; }
         
-        /* CARD INTERATTIVE GENERICHE */
+        /* CARD INTERATTIVE */
         .action-card {
-            padding: 15px 10px;
-            border-radius: 12px;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: space-between;
-            height: 100%;
-            cursor: not-allowed; /* Default bloccato */
-            opacity: 0.7;
-            transition: all 0.2s ease;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-            background: white;
-            border: 2px solid transparent;
-            min-height: 140px;
+            padding: 15px 10px; border-radius: 12px; text-align: center;
+            display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+            height: 100%; cursor: not-allowed; opacity: 0.7; transition: all 0.2s ease;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05); background: white; border: 2px solid transparent; min-height: 140px;
         }
         
         /* Quando sbloccato */
-        body.admin-unlocked .action-card {
-            cursor: pointer;
-            opacity: 1;
-        }
-        body.admin-unlocked .action-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-        body.admin-unlocked .action-card:active {
-            transform: scale(0.98);
-        }
+        body.admin-unlocked .action-card { cursor: pointer; opacity: 1; }
+        body.admin-unlocked .action-card:hover { transform: translateY(-3px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        body.admin-unlocked .action-card:active { transform: scale(0.98); }
 
         .card-icon { font-size: 32px; margin-bottom: 10px; }
         .card-desc { font-size: 13px; font-weight: 600; line-height: 1.3; margin-bottom: 10px; flex-grow: 1; display: flex; align-items: center; justify-content: center; }
         .card-badge { padding: 4px 12px; border-radius: 20px; font-weight: 800; font-size: 14px; }
 
-        /* Colori specifici per tipo */
+        /* Colori Card */
         .style-base { border-color: #d1fae5; background: #ecfdf5; color: #065f46; }
         .style-base .card-badge { background: var(--success); color: white; }
         .style-base:hover { border-color: var(--success); }
@@ -76,7 +60,7 @@
         .style-severe { background: #fee2e2; border: 2px solid #ef4444; }
         .style-severe .card-badge { background: var(--danger); color: white; border: none; }
 
-        /* Sezioni */
+        /* SEZIONI GENERALI */
         .main-section { background: white; padding: 20px; border-radius: 10px; margin-bottom: 30px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         .main-section h2 { font-size: 18px; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 2px solid var(--gray-200); }
         .base-header { border-color: var(--success) !important; color: var(--success); }
@@ -84,11 +68,7 @@
         .vip-header { border-color: var(--danger) !important; color: var(--danger); }
         .penalty-header { border-color: var(--danger) !important; color: var(--danger); }
 
-        /* UI Elementi generali */
-        .footer { background: white; padding: 20px; border-radius: 10px; text-align: center; font-size: 13px; color: var(--gray-700); margin-top: 30px; }
-        .edit-section { background: var(--gray-100); padding: 20px; border-radius: 10px; margin: 30px 0; border: 2px solid var(--primary); }
-        .edit-controls { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; align-items: center; }
-        .reason-input { width: 100%; padding: 12px; border: 2px solid var(--gray-200); border-radius: 8px; font-size: 16px; margin-bottom: 15px; }
+        /* STATUS E STORICO */
         .status { background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
         .status-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--gray-200); }
         .history-list { max-height: 300px; overflow-y: auto; }
@@ -101,14 +81,25 @@
         .type-penalty { background: #6b7280; color: white; }
         .type-streak { background: #8b5cf6; color: white; }
 
+        /* ADMIN SECTION */
+        .edit-section { background: var(--gray-100); padding: 20px; border-radius: 10px; margin: 30px 0; border: 2px solid var(--primary); }
+        .edit-controls { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; align-items: center; }
+        .reason-input { width: 100%; padding: 12px; border: 2px solid var(--gray-200); border-radius: 8px; font-size: 16px; margin-bottom: 15px; }
+
+        /* PREMI SECTION */
+        .section-title { background: var(--primary); color: white; padding: 10px; border-radius: 6px; margin: 15px 0 10px; font-weight: bold; font-size: 14px; }
+        .premi-item { background: var(--gray-100); padding: 15px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .premi-header { font-weight: bold; color: var(--primary); }
+        .premi-option { font-size: 13px; color: var(--gray-700); }
+
+        /* UI GENERALE */
         input, select, button { padding: 8px 12px; border-radius: 6px; font-size: 14px; border: 1px solid #ddd; }
         button { cursor: pointer; border: none; color: white; font-weight: bold; }
         .btn-primary { background: var(--primary); }
         .btn-success { background: var(--success); }
         .btn-danger { background: var(--danger); }
-        
-        /* Overlay blocco */
         #lockMessage { text-align: center; background: #fff3cd; color: #854d0e; padding: 10px; border-radius: 8px; margin-bottom: 20px; display: block; border: 1px solid #fde68a; }
+        .footer { background: white; padding: 20px; border-radius: 10px; text-align: center; font-size: 13px; color: var(--gray-700); margin-top: 30px; }
         
         @media (max-width: 768px) { .card-container { grid-template-columns: repeat(2, 1fr); } }
     </style>
@@ -116,22 +107,36 @@
 <body>
     <div class="container">
         <header>
-            <h1>🎮 Bruno Mars Manager</h1>
+            <h1>🎮 Bruno Mars e i suoi guadagni</h1>
+            <p>Tu volere KEBAP? Tu volele sushi? Tu volere soldini? Tu bravo, tu ottiene!</p>
             <div id="loading" style="color: var(--primary); font-weight: bold;">📡 Connessione...</div>
             <div class="token-display">Token Totali: <span id="totalTokens">...</span></div>
         </header>
 
         <div id="lockMessage">🔒 <strong>Modalità sola lettura.</strong> Inserisci la password sotto per abilitare i click!</div>
 
+        <div class="status">
+            <div class="status-item"><span>Giorni senza penalità:</span><span id="streakDays" style="font-weight:bold; color:purple;">...</span></div>
+            <div class="status-item"><span>Token da azioni base:</span><span id="baseTokens">...</span></div>
+            <div class="status-item"><span>Token da azioni pro:</span><span id="proTokens">...</span></div>
+            <div class="status-item"><span>Token da azioni VIP:</span><span id="vipTokens">...</span></div>
+            <div class="status-item"><span>Token persi da penalità:</span><span id="penaltyTokens">...</span></div>
+        </div>
+
+        <div class="main-section">
+            <h2>📊 Ultimi Movimenti</h2>
+            <div class="history-list" id="historyList">Loading...</div>
+        </div>
+
         <div class="edit-section">
+            <h3 style="margin-bottom:15px;">⚙️ Gestione Token</h3>
             <div class="edit-controls">
                 <input type="password" id="adminPassword" placeholder="Password admin">
                 <button class="btn-primary" onclick="window.checkPassword()">🔓 Sblocca Click & Modifiche</button>
             </div>
             
             <div id="editContent" style="display: none;">
-                <h3 style="margin-bottom:10px;">🛠️ Aggiunta Manuale</h3>
-                <input type="text" id="customReason" class="reason-input" placeholder="📝 Motivo personalizzato (opzionale)">
+                <input type="text" id="customReason" class="reason-input" placeholder="📝 Motivo personalizzato (es. Compiti extra)">
                 <div class="edit-controls">
                     <select id="tokenType"><option value="base">Base</option><option value="pro">Pro</option><option value="vip">VIP</option></select>
                     <input type="number" id="tokenAmount" value="1" style="width: 60px;">
@@ -143,19 +148,6 @@
                     <button class="btn-danger" onclick="window.resetData()">RESET TOTALE</button>
                 </div>
             </div>
-        </div>
-
-        <div class="status">
-            <div class="status-item"><span>🔥 Streak (giorni):</span><span id="streakDays" style="font-weight:bold; color:purple;">...</span></div>
-            <div class="status-item"><span>Token Base:</span><span id="baseTokens">...</span></div>
-            <div class="status-item"><span>Token Pro:</span><span id="proTokens">...</span></div>
-            <div class="status-item"><span>Token VIP:</span><span id="vipTokens">...</span></div>
-            <div class="status-item"><span>Token Persi:</span><span id="penaltyTokens">...</span></div>
-        </div>
-
-        <div class="main-section">
-            <h2>📊 Ultimi Movimenti</h2>
-            <div class="history-list" id="historyList">Loading...</div>
         </div>
 
         <div class="main-section">
@@ -242,6 +234,22 @@
             </div>
         </div>
 
+        <div class="main-section">
+            <h2>🎁 Premi Disponibili</h2>
+            
+            <div class="section-title">60 Token</div>
+            <div class="premi-item"><div class="premi-header">Ricarica Play Store</div><div class="premi-option">5 euro</div></div>
+            <div class="premi-item"><div class="premi-header">Cibo</div><div class="premi-option">Kebab</div></div>
+            
+            <div class="section-title">120 Token</div>
+            <div class="premi-item"><div class="premi-header">Ricarica Play Store</div><div class="premi-option">10 euro</div></div>
+            <div class="premi-item"><div class="premi-header">Cibo</div><div class="premi-option">McDonald's</div></div>
+            
+            <div class="section-title">180 Token</div>
+            <div class="premi-item"><div class="premi-header">Ricarica Play Store</div><div class="premi-option">20 euro</div></div>
+            <div class="premi-item"><div class="premi-header">Cibo</div><div class="premi-option">Sushi</div></div>
+        </div>
+
         <div class="footer">
             <p>Token Economy Tracker | Bruno Mars Edition</p>
         </div>
@@ -309,7 +317,7 @@
         
         window.clickTask = function(amount, type, description) {
             if (!isAdminUnlocked) {
-                alert("🔒 BLOCCATO! Un genitore deve inserire la password sopra.");
+                alert("🔒 BLOCCATO! Un genitore deve inserire la password sotto lo storico.");
                 return;
             }
             
@@ -320,7 +328,6 @@
             else if (type === 'vip') currentData.vipTokens += amount;
 
             addToHistory(type, amount, description);
-            // Feedback visivo rapido (opzionale, per ora basta l'aggiornamento UI)
         }
 
         window.clickPenalty = function(amount, description) {
@@ -350,7 +357,6 @@
         }
 
         window.removeTokenTyped = function() {
-             // Rimozione manuale (non ha un equivalente click diretto negativo salvo penalità)
             const amount = parseInt(document.getElementById('tokenAmount').value) || 1;
             const type = document.getElementById('tokenType').value;
             const customReason = document.getElementById('customReason').value.trim();
@@ -397,6 +403,7 @@
                 document.getElementById('lockMessage').style.display = 'none';
                 document.getElementById('adminPassword').value = '';
                 document.querySelector('button[onclick="window.checkPassword()"]').style.display = 'none';
+                alert("🔓 Sbloccato! Ora puoi cliccare le card.");
             } else {
                 alert("Password errata!");
             }
